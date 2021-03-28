@@ -1,6 +1,3 @@
-#ifndef MASTER_H
-#define MASTER_H
+#pragma once
 
 #include "lib/header1.h"
-
-#endif

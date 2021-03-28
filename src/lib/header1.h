@@ -1,8 +1,5 @@
-#ifndef HEADER1_H
-#define HEADER1_H
+#pragma once
 
 #include <stdio.h>
 
 int testact();
-
-#endif
