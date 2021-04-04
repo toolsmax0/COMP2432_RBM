@@ -31,10 +31,11 @@ typedef enum {FOREACH_CMD(GEN_ENUM)} CMD;
 
 char* cmd_to_string(int cmd);
 int cmd_to_int(char* cmd);
+void usage(int cmd);
 
 int run_cmd(int cmd, char* param)
 {
-    printf("accepted: \"%s\", ", param);
+    // printf("accepted: \"%s\", ", param);
 
     switch (cmd)
     {
@@ -56,27 +57,28 @@ int run_cmd(int cmd, char* param)
 
 int main(int argc, char** argv)
 {
-    printf("---- DEBUG START ----\n");
-    printf("received %d args in total,", argc);
+    // printf("---- DEBUG START ----\n");
+    // printf("received %d args in total,", argc);
 
-    for (int i = 0; i < argc; i++)
-    {
-        printf(" \"%s\"", argv[i]);
-    }
-    printf("\ncmd in string: %s, cmd in int: %d\n", cmd_to_string(addMeeting), cmd_to_int("addMeeting"));
-    printf("---- DEBUG END ----\n");
+    // for (int i = 0; i < argc; i++)
+    // {
+    //     printf(" \"%s\"", argv[i]);
+    // }
+    // printf("\ncmd in string: %s, cmd in int: %d\n", 
+    //     cmd_to_string(addMeeting), cmd_to_int("addMeeting"));
+    // printf("---- DEBUG END ----\n");
 
-    int status;
+    int cmd_int, status;
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
-        scanf("%s %[^\f\n\r\t\v]", cmd, param);
-        printf("cmd @\"%s\"/\"%s\", ", cmd, param);
+        scanf("%s %[^;\f\n\r\t\v]", cmd, param);
+        //printf("cmd @\"%s\"/\"%s\", ", cmd, param);
 
-        int cmd_int = cmd_to_int(cmd);
-
+        cmd_int = cmd_to_int(cmd);
+        usage(cmd_int);
         status = run_cmd(cmd_int, param);
-        printf("status @\"%d\"\n", status);
+        //printf("status @\"%d\"\n", status);
     }
     while (status != 0);
 
@@ -93,4 +95,62 @@ int cmd_to_int(char* cmd)
 {
     FOREACH_CMD(RETURN_CMD_INT);
     return INVALID;
+}
+
+// syntax and explanations
+const char *SYNTAX[] =
+{
+    "Command                 [Parameters]                            EndSymbol     \n", //0
+    "  addMeeting              -t YYYY-MM-DD hh:mm n.n p [d] [d]       ;           \n", //1
+    "  addPresentation         -t YYYY-MM-DD hh:mm n.n p d d           ;           \n", //2
+    "  addConference           -t YYYY-MM-DD hh:mm n.n p d d           ;           \n", //3
+    "  bookDevice              -t YYYY-MM-DD hh:mm n.n d               ;           \n", //4
+    "  addBatch                -f                                      ;           \n", //5
+    "  printBookings           –a                                      ;           \n", //6
+    "  endProgram                                                      ;           \n", //7
+    "Parameter Syntax        Information                                           \n", //8
+    "  t                       A tenant for booking                                \n", //9
+    "                              tanant_A|tanant_B|tanant_C|tanant_D|tanant_E    \n", //0
+    "  YYYY-MM-DD hh:mm        Booking start time format in ISO 8601               \n", //1
+    "  n.n                     Duration in format hours.minutes                    \n", //2
+    "  p                       Number of people                                    \n", //3
+    "  d                       A device for booking                                \n", //4
+    "                            = webcam_FHD|webcam_UHD|monitor_50|monitor_75     \n", //5
+    "                              |projector_2K|projector_4K|screen_100|screen_150\n", //6
+    "  d d                     Only in two combinations                            \n", //7
+    "                            = webcam_* monitor_*|projector_* screen_*         \n", //8
+    "  f                       File with commands                                  \n", //9
+    "  a                       Algorithms used                                     \n", //0
+    "                            = fcfs|prio|opti|ALL                              \n", //1
+};
+// syntax match-line
+const int MATCH[8][11] =
+{
+    {21,},
+    {8,9,10,11,12,13,14,15,16,17,18},
+    {8,9,10,11,12,13,14,15,16,17,18},
+    {8,9,10,11,12,13,14,15,16,17,18},
+    {8,9,10,11,12,14,15,16,},
+    {19,},
+    {20,21,},
+    {0,},
+};
+
+void usage(int cmd)
+{
+    printf("\nUsage: \n");
+
+    if (cmd)
+    {
+        printf("%s", SYNTAX[cmd]);
+        for (int i = 0; i < sizeof(MATCH[cmd]) / sizeof(int) && MATCH[cmd][i]; i++)
+            printf("%s",SYNTAX[MATCH[cmd][i]]);
+    }
+    else 
+    {
+        for (int i = 0; i < MATCH[cmd][0]; i++)
+            printf("%s", SYNTAX[i]);
+    }
+
+    printf("\n");
 }
