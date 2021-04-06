@@ -5,7 +5,7 @@
 #define MAX_INPUT_LENGTH MAX_CMD_LENGTH+MAX_PARAM_LENGTH
 
 /**
- * @brief run status flags after running a command
+ * @brief execution status flags after running a command
  * 
  * < 0 indicates error
  * = 0 indicates intended exit system
@@ -19,7 +19,7 @@ typedef enum
     RUN_ERROR_INVALID_CMD   ,
     RUN_EXIT                = 0,
     RUN_SUCCESS
-} STATUS;
+} EXE;
 
 // !!! WARNING !!! NEVER USE these two macro when variable cmd is not defined
 #define RETURN_CMD_STR(e) {if (cmd == e) {return #e;}}

@@ -11,13 +11,13 @@ equipment eq[1000];
 equipment *eq_t[1000];
 
 /**
- * @brief run a single cmd, returns running status
+ * @brief run a single cmd, returns execution status
  * 
  * @param cmd short command type in int, see enum CMD
  * @param param parameters for the command
- * @return run status in int, see RUN_* definitions
+ * @return execution status in int, see enum EXE in lib/cli.h
  */
-STATUS run_cmd(int cmd, char *param)
+EXE run_cmd(int cmd, char *param)
 {
     // printf("accepted: \"%s\", ", param);
 
@@ -77,20 +77,20 @@ int main()
         writep = p[1];
         readp = p[2];
         close(p[3]);
-        int cmd_int, status;
+
+        int cmd_int, execution;
         char input[MAX_INPUT_LENGTH];
         char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
         do
         {
             scanf("%[^;];%*[^\f\n\r\t\v]", input);
             sscanf(input, "%s %[^;]", cmd, param);
-            printf("cmd @\"%s\"/\"%s\", ", cmd, param);
 
             cmd_int = cmd_to_int(cmd);
             // < 0 then error occured
-            if ((status = run_cmd(cmd_int, param)) < RUN_EXIT)
+            if ((execution = run_cmd(cmd_int, param)) < RUN_EXIT)
             {
-                switch (status)
+                switch (execution)
                 {
                 case RUN_ERROR_PARAM:
                 case RUN_ERROR_INVALID_CMD:
@@ -108,9 +108,10 @@ int main()
                 }
             }
 #ifdef _DEBUG
-            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, status @%d\n", cmd_int, cmd, param, status);
+            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n"
+                , cmd_int, cmd, param, execution);
 #endif
-        } while (status != RUN_EXIT);
+        } while (execution != RUN_EXIT);
 
         printf("quit loop, exiting main program\n");
     }

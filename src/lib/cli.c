@@ -30,7 +30,7 @@ CMD     cmd_to_int(char* cmd)
 }
 
 // command syntax and explanations
-const char *SYNTAX[] =
+static const char *SYNTAX[] =
 {
     "Command                 [Parameters]                            EndSymbol     \n", //0
     "  addMeeting              -t YYYY-MM-DD hh:mm n.n p [d] [d]       ;           \n", //1
@@ -56,7 +56,7 @@ const char *SYNTAX[] =
     "                            = fcfs|prio|opti|ALL                              \n", //21
 };
 // matches command types with param explanation
-const int MATCH[8][11] =
+static const int MATCH[8][11] =
 {
     {21,},
     {8,9,10,11,12,13,14,15,16,17,18},
