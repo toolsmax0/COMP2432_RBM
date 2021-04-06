@@ -40,8 +40,6 @@ typedef enum
 #define GEN_ENUM(e) e,
 typedef enum {FOREACH_CMD(GEN_ENUM)} CMD;
 
-STATUS  run_cmd         (int   cmd, char* param);
 char*   cmd_to_string   (int   cmd);
 CMD     cmd_to_int      (char* cmd);
 void    usage           (int   cmd);
-void    cli             ();
