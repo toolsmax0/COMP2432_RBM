@@ -10,10 +10,44 @@ equipment eq[1000];
 
 equipment *eq_t[1000];
 
+/**
+ * @brief run a single cmd, returns execution status
+ * 
+ * @param cmd short command type in int, see enum CMD
+ * @param param parameters for the command
+ * @return execution status in int, see enum EXE in lib/cli.h
+ */
+EXE run_cmd(int cmd, char *param)
+{
+    // printf("accepted: \"%s\", ", param);
+
+    switch (cmd)
+    {
+    case addMeeting:
+    case addPresentation:
+    case addConference:
+    case bookDevice:
+    case addBatch:
+    case printBookings:
+        /* code */
+        // if param not correct,
+        return RUN_ERROR_PARAM;
+        // return RUN_SUCCESS;
+
+    case endProgram:
+        return RUN_EXIT;
+    case INVALID:
+        return RUN_ERROR_INVALID_CMD;
+    // cmd (string) -> (int) parsing error!
+    default:
+        return RUN_ERROR_PARSING;
+    }
+}
+
 int main()
 {
 
-    FILE *fp = fopen("RBM.ini","r");
+    FILE *fp = fopen("RBM.ini", "r");
     {
         // read in the config
     }
@@ -31,11 +65,10 @@ int main()
     if (flag)
         return -1;
 
-    
     cid = fork();
     if (cid < 0)
         return -2;
-    
+
     // parent process
     else if (cid > 0)
     {
@@ -44,6 +77,43 @@ int main()
         writep = p[1];
         readp = p[2];
         close(p[3]);
+
+        int cmd_int, execution;
+        char input[MAX_INPUT_LENGTH];
+        char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
+        do
+        {
+            scanf("%[^;];%*[^\f\n\r\t\v]", input);
+            sscanf(input, "%s %[^;]", cmd, param);
+
+            cmd_int = cmd_to_int(cmd);
+            // < 0 then error occured
+            if ((execution = run_cmd(cmd_int, param)) < RUN_EXIT)
+            {
+                switch (execution)
+                {
+                case RUN_ERROR_PARAM:
+                case RUN_ERROR_INVALID_CMD:
+                    // intended, two cases with same handling
+                    usage(cmd_int);
+                    break;
+                case RUN_ERROR_RUNTIME:
+                case RUN_ERROR_PARSING:
+                    puts("this is a bug");
+                    break;
+
+                default:
+                    puts("Error detected.");
+                    break;
+                }
+            }
+#ifdef _DEBUG
+            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n"
+                , cmd_int, cmd, param, execution);
+#endif
+        } while (execution != RUN_EXIT);
+
+        printf("quit loop, exiting main program\n");
     }
 
     // child process
