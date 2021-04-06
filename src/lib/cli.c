@@ -1,44 +1,18 @@
+#include "cli.h"
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_CMD_LENGTH 20
-#define MAX_PARAM_LENGTH 100
+// #define _DEBUG
+// #define _CLI_DEBUG
 
-// run status flags
-// <0 means error occured
-// =0 means exit system
-// >0 means successfule
-#define RUN_ERROR_PARAM -4
-#define RUN_ERROR_RUNTIME -3
-#define RUN_ERROR_PARSING -2
-#define RUN_ERROR_INVALID_CMD -1
-#define RUN_EXIT 0
-#define RUN_SUCCESS 1
-
-// !!! WARNING !!! NEVER USE these two macro when variable cmd is not defined
-#define RETURN_CMD_STR(e) {if (cmd == e) {return #e;}}
-#define RETURN_CMD_INT(e) {if (strcmp(cmd, #e) == 0) {return e;}}
-
-// for-each macro, defines all command heads
-#define FOREACH_CMD(f)       \
-        f(INVALID        )   \
-        f(addMeeting     )   \
-        f(addPresentation)   \
-        f(addConference  )   \
-        f(bookDevice     )   \
-        f(addBatch       )   \
-        f(printBookings  )   \
-        f(endProgram     )   \
-
-// typedef enum {INVALID, CMD1, CMD2, CMD3, ...} CMD;
-#define GEN_ENUM(e) e,
-typedef enum {FOREACH_CMD(GEN_ENUM)} CMD;
-
-char* cmd_to_string(int cmd);
-int cmd_to_int(char* cmd);
-void usage(int cmd);
-
-int run_cmd(int cmd, char* param)
+/**
+ * @brief run a single cmd, returns running status
+ * 
+ * @param cmd short command type in int, see enum CMD
+ * @param param parameters for the command
+ * @return run status in int, see RUN_* definitions
+ */
+STATUS  run_cmd(int  cmd, char* param)
 {
     // printf("accepted: \"%s\", ", param);
 
@@ -62,16 +36,21 @@ int run_cmd(int cmd, char* param)
     }
 }
 
-int main(int argc, char** argv)
+/**
+ * @brief main CLI, with loop and exit
+ * 
+ */
+void    cli()
 {
 
     int cmd_int, status;
+    char input[MAX_INPUT_LENGTH];
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
-        scanf("%s %[^;]", cmd, param);
-        // \f\n\r\t\v for normal endings, may be needed when handling a bat file
-        // printf("cmd @\"%s\"/\"%s\", ", cmd, param);
+        scanf("%[^;];%*[^\f\n\r\t\v]", input);
+        sscanf(input, "%s %[^;]", cmd, param);
+        printf("cmd @\"%s\"/\"%s\", ", cmd, param);
 
         cmd_int = cmd_to_int(cmd);
         // < 0 then error occured
@@ -94,7 +73,9 @@ int main(int argc, char** argv)
                 break;
             }
         }
-        // printf("status @\"%d\"\n", status);
+        #ifdef _DEBUG
+            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, status @%d\n", cmd_int, cmd, param, status);
+        #endif
     }
     while (status != RUN_EXIT);
 
@@ -102,19 +83,31 @@ int main(int argc, char** argv)
 
 }
 
-char* cmd_to_string(int cmd)
+/**
+ * @brief parse a int cmd to string
+ * 
+ * @param cmd short command type in int, see enum CMD
+ * @return string of short command type
+ */
+char*   cmd_to_string(int cmd)
 {
     FOREACH_CMD(RETURN_CMD_STR);
     return "INVALID";
 }
 
-int cmd_to_int(char* cmd)
+/**
+ * @brief parse a string cmd to string
+ * 
+ * @param cmd short command type in string, see enum CMD
+ * @return int of short command type
+ */
+CMD     cmd_to_int(char* cmd)
 {
     FOREACH_CMD(RETURN_CMD_INT);
     return INVALID;
 }
 
-// syntax and explanations
+// command syntax and explanations
 const char *SYNTAX[] =
 {
     "Command                 [Parameters]                            EndSymbol     \n", //0
@@ -140,8 +133,7 @@ const char *SYNTAX[] =
     "  a                       Algorithms used                                     \n", //20
     "                            = fcfs|prio|opti|ALL                              \n", //21
 };
-// syntax match-line
-// matches command heads with param body
+// matches command types with param explanation
 const int MATCH[8][11] =
 {
     {21,},
@@ -155,9 +147,12 @@ const int MATCH[8][11] =
 };
 
 
-// generate help msg for each cmd
-// if cmd not valid then print all available msg
-void usage(int cmd)
+/**
+ * @brief print out usage for a command type
+ * 
+ * @param cmd short command type in int, see enum CMD
+ */
+void    usage(int cmd)
 {
     printf("\nUsage: \n");
 
@@ -175,3 +170,10 @@ void usage(int cmd)
 
     printf("\n");
 }
+
+#ifdef _CLI_DEBUG
+    int main()
+    {
+        cli();
+    }
+#endif
