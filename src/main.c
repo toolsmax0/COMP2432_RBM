@@ -28,8 +28,8 @@
         printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
 
 room rooms[1000];
-equipment eq[1000];
-equipment *eq_t[1000];
+device devices[1000];
+device *devices_t[1000];
 
 /**
  * @brief initiate all available devices from RBM.ini
@@ -39,11 +39,11 @@ equipment *eq_t[1000];
 int init_from_ini()
 {
     dictionary *d = iniparser_load("RBM.ini");
-    INIT(eq, quantity, devices);
+    INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
 
 #ifdef _DEBUG
-    _INIT_DEBUG(eq, quantity, devices);
+    _INIT_DEBUG(devices, quantity, devices);
     _INIT_DEBUG(rooms, capacity, rooms);
 #endif
 
@@ -53,13 +53,14 @@ int init_from_ini()
 /**
  * @brief run a single cmd, returns execution status
  * 
- * @param cmd short command type in int, see enum CMD
- * @param param parameters for the command
- * @return execution status in int, see enum EXE in lib/cli.h
+ * @param   cmd     short command type in int, see enum CMD
+ * @param   param   parameters for the command
+ * @return  execution status in int, see enum EXE in lib/cmd.h
  */
 EXE run_cmd(int cmd, char *param)
 {
     // printf("accepted: \"%s\", ", param);
+    int n_param;
 
     switch (cmd)
     {

@@ -5,17 +5,16 @@
 typedef struct {
     char name[40];
     int capacity;
-}room;
+} room;
 
-// use hashtable to store equipment
+// use hashtable to store device
 typedef struct
 {
     char name[40];
     int quantity;
     int occupied;
-} equipment;
+} device;
 
 
-int insert(equipment *a[], equipment *x);
-
-int search(equipment *a[], equipment *x);
+int insert(device *a[], device *x);
+int search(device *a[], device *x);

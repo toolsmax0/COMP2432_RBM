@@ -1,9 +1,6 @@
-#include "cli.h"
+#include "cmd.h"
 #include <stdio.h>
 #include <string.h>
-
-// #define _DEBUG
-// #define _CLI_DEBUG
 
 /**
  * @brief parse a int cmd to string
@@ -68,7 +65,6 @@ static const int MATCH[8][11] =
     {0,},
 };
 
-
 /**
  * @brief print out usage for a command type
  * 
@@ -92,10 +88,3 @@ void    usage(int cmd)
 
     printf("\n");
 }
-
-#ifdef _CLI_DEBUG
-    int main()
-    {
-        cli();
-    }
-#endif

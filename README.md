@@ -3,9 +3,10 @@ Room Booking Manager System for COMP2432 group project
 
 ## Deployment
 
-To compile this project, cd to the root project folder and execute `build.sh` script.
+To deploy this project, cd to the root project folder and execute `build.sh` script.
 
 ```sh
+git clone https://github.com/toolsmax0/COMP2432_RBM.git
 cd COMP2432_RBM
 sh build.sh
 ```
@@ -16,7 +17,7 @@ To execute, run the following command.
 ./out/RBM
 ```
 
-For further information, soserve the following directory structure.
+For further information, observe the following directory structure.
 
 ## Directory Structure
 
