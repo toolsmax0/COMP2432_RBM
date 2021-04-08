@@ -35,7 +35,7 @@ static const char *SYNTAX[] =
     "  addConference           -t YYYY-MM-DD hh:mm n.n p d d           ;           \n", //3
     "  bookDevice              -t YYYY-MM-DD hh:mm n.n d               ;           \n", //4
     "  addBatch                -f                                      ;           \n", //5
-    "  printBookings           –a                                      ;           \n", //6
+    "  printBookings           -a                                      ;           \n", //6
     "  endProgram                                                      ;           \n", //7
     "Parameter Syntax        Information                                           \n", //8
     "  t                       A tenant for booking                                \n", //9
@@ -76,7 +76,7 @@ void    usage(int cmd)
 
     if (cmd)
     {
-        printf("%s", SYNTAX[cmd]);
+        printf("%s\n", SYNTAX[cmd]);
         for (int i = 0; i < sizeof(MATCH[cmd]) / sizeof(int) && MATCH[cmd][i]; i++)
             printf("%s",SYNTAX[MATCH[cmd][i]]);
     }
