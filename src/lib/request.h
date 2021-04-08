@@ -12,18 +12,27 @@
  * @param   length    length of in !!minutes!!
  * @param   people    number of people, if only devices are booked, people=0
  * @param   device    device name in string
+ * @param   isvalid   whether it is a valid request
  */
 typedef struct {
-    int priority;
+    int priority; // Linux style
     char tenant[40];
-    struct tm start;
-    struct tm end;
-    int length;
+    time_t start;
+    time_t end;
+    int length; // Minutes
     int people;
     char device[2][40];
+    char isvalid;
 } request;
 
-void parse_time(request *t, int hr, int min);
+// return a time after some period from t
+// supports negatigenesisve hr and min
+time_t time_after(time_t t, int hr, int min);
 
-// 删了 parser会在main.c写 这里就不需要了
-// int get_time(char *time); // get an integer from a string of time.
+// compare two time and return their difference
+// TODO
+double cmp_time(time_t a, time_t b);
+
+// check if the request is valid
+// TODO
+char check_valid(request *r);

@@ -9,16 +9,19 @@
  * @param   prev      pointer to previous request node
  * @param   next      pointer to next request node
  */
-typedef struct RQ_NODE_ {
+typedef struct NODE_ {
     request *r;
-    struct RQ_NODE_ *prev;
-    struct RQ_NODE_ *next;
-} rq_node;
+    struct NODE_ *prev;
+    struct NODE_ *next;
+} node;
 
-// 移到.c了 不然compile不了
-// // the first and last node on the timeline
-// node    genesis;
-// node    eternity;
 
-void    init_timeline();
-void    add_request(rq_node *new_node);
+// The first and last node are border guards, NEVER insert anything out of them.
+node*    init_timeline();
+
+// insert the newnode after the target node
+void insert_node(node* newnode,node* target);
+
+// remove the target node
+// TODO
+void remove_node(node *target);
