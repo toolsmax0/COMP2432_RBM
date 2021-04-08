@@ -18,6 +18,8 @@
  */
 void parse_time(request *t, int hr, int min)
 {
+    // input range: 1-12
+    // desired range: 0-11
     // tm_mon=0 <-> Jan.
     // tm_mon=11 <-> Dec.
     t->start.tm_mon -= 1;

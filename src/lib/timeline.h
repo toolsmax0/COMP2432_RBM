@@ -20,5 +20,5 @@ typedef struct RQ_NODE_ {
 // node    genesis;
 // node    eternity;
 
-void    init_timeline();
-void    add_request(rq_node *new_node);
+void    init_timeline(rq_node *genesis, rq_node *eternity);
+void    append_request(rq_node *new_node, rq_node *eternity);
