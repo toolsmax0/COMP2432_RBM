@@ -7,7 +7,7 @@ rq_node genesis, eternity;
 void init_timeline()
 {
     genesis.next = &eternity;
-    eternity.prev = &genesis;.
+    eternity.prev = &genesis;
 
     genesis.r = NULL;
     genesis.prev = NULL;
@@ -16,11 +16,11 @@ void init_timeline()
 }
 
 /**
- * @brief insert a new node into the timeline
+ * @brief insert a new request node into the timeline
  * 
  * @param new_node new node that have be allocated already
  */
-void insert_node(rq_node *new_node)
+void add_request(rq_node *new_node)
 {
     rq_node *last_node = eternity.prev;
     // unlink the last node with eternity

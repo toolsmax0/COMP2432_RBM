@@ -23,7 +23,7 @@ typedef struct {
     char device[2][40];
 } request;
 
-void cal_end(request *t);
+void parse_time(request *t, int hr, int min);
 
 // 删了 parser会在main.c写 这里就不需要了
 // int get_time(char *time); // get an integer from a string of time.

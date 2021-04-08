@@ -21,4 +21,4 @@ typedef struct RQ_NODE_ {
 // node    eternity;
 
 void    init_timeline();
-void    add_request(rq_node new_node);
+void    add_request(rq_node *new_node);

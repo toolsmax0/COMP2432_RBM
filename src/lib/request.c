@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define _REQ_DEBUG
+// #define _REQ_DEBUG
 
 #define DATE_DEST(rq) &(rq->start.tm_year), &(rq->start.tm_mon), &(rq->start.tm_mday), &(rq->start.tm_hour), &(rq->start.tm_min)
 #define DEVICE_PAIRING(val)                                 \
@@ -53,6 +53,7 @@ int main(int argc, char **argv)
                      &(rq->people), rq->device[0], rq->device[1]);
     parse_time(rq, len[0], len[1]);
 
+    // only fits addMeeting/conference now...
     // below is a sample input
     // -tenant_A 2021-4-1 1:11 1.30 10 device1 device2
     printf("scanned: %d\n", n_param);
