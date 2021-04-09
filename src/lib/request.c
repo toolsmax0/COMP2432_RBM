@@ -16,26 +16,16 @@
 /**
  * @brief calculate length = (hr*60 + min), and end = (start + len), stored in ptr
  */
-void parse_time(request *t, int hr, int min)
+time_t time_after(time_t t, int hr, int min)
 {
-    // input range: 1-12
-    // desired range: 0-11
-    // tm_mon=0 <-> Jan.
-    // tm_mon=11 <-> Dec.
-    t->start.tm_mon -= 1;
-
-    // tm_year=0 <-> AD1900
-    t->start.tm_year -= 1900;
 
     // very unlikely to overflow, but still possible
-    int l = hr * 60 + min;
-    t->length = l;
+    struct tm *t0 = localtime(&t);
 
-    t->end = t->start;
-    t->end.tm_min += min;
-    t->end.tm_hour += hr;
-
-    mktime(&(t->end));
+    struct tm newtime = *t0;
+    newtime.tm_min += min;
+    newtime.tm_hour += hr;
+    return mktime(&newtime);
 }
 
 #ifdef _REQ_DEBUG
