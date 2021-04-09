@@ -1,9 +1,6 @@
-#include "cli.h"
+#include "cmd.h"
 #include <stdio.h>
 #include <string.h>
-
-// #define _DEBUG
-// #define _CLI_DEBUG
 
 /**
  * @brief parse a int cmd to string
@@ -38,7 +35,7 @@ static const char *SYNTAX[] =
     "  addConference           -t YYYY-MM-DD hh:mm n.n p d d           ;           \n", //3
     "  bookDevice              -t YYYY-MM-DD hh:mm n.n d               ;           \n", //4
     "  addBatch                -f                                      ;           \n", //5
-    "  printBookings           –a                                      ;           \n", //6
+    "  printBookings           -a                                      ;           \n", //6
     "  endProgram                                                      ;           \n", //7
     "Parameter Syntax        Information                                           \n", //8
     "  t                       A tenant for booking                                \n", //9
@@ -68,7 +65,6 @@ static const int MATCH[8][11] =
     {0,},
 };
 
-
 /**
  * @brief print out usage for a command type
  * 
@@ -80,7 +76,7 @@ void    usage(int cmd)
 
     if (cmd)
     {
-        printf("%s", SYNTAX[cmd]);
+        printf("%s\n", SYNTAX[cmd]);
         for (int i = 0; i < sizeof(MATCH[cmd]) / sizeof(int) && MATCH[cmd][i]; i++)
             printf("%s",SYNTAX[MATCH[cmd][i]]);
     }
@@ -92,10 +88,3 @@ void    usage(int cmd)
 
     printf("\n");
 }
-
-#ifdef _CLI_DEBUG
-    int main()
-    {
-        cli();
-    }
-#endif

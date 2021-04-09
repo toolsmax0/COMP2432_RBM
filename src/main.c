@@ -4,22 +4,59 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-room rooms[1000];
+#define _DEBUG
 
-equipment eq[1000];
+/**
+ * @brief initialize a target
+ * 
+ * @param val allocated varaiable name
+ * @param f varaible fieldname storing its capacity/quantity
+ * @param s section name of the keys in the ini file
+ */
+#define INIT(val, f, s)                                 \
+    int n_##s = iniparser_getsecnkeys(d, #s);           \
+    const char *name_##s[n_##s];                        \
+    iniparser_getseckeys(d, #s, name_##s);              \
+    for (int i = 0; i < n_##s; i++)                     \
+    {                                                   \
+        sscanf(name_##s[i], #s ":%s", val[i].name);     \
+        val[i].f = iniparser_getint(d, name_##s[i], 0); \
+    }
+#define _INIT_DEBUG(val, f, s)                      \
+    printf("No. of " #s " available: %d\n", n_##s); \
+    for (int i = 0; i < n_##s; i++)                 \
+        printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
 
-equipment *eq_t[1000];
+/**
+ * @brief initiate all available devices from RBM.ini
+ * 
+ * @param 
+ */
+int init_from_ini()
+{
+    dictionary *d = iniparser_load("RBM.ini");
+    INIT(devices, quantity, devices);
+    INIT(rooms, capacity, rooms);
+
+#ifdef _DEBUG
+    _INIT_DEBUG(devices, quantity, devices);
+    _INIT_DEBUG(rooms, capacity, rooms);
+#endif
+
+    return 0;
+}
 
 /**
  * @brief run a single cmd, returns execution status
  * 
- * @param cmd short command type in int, see enum CMD
- * @param param parameters for the command
- * @return execution status in int, see enum EXE in lib/cli.h
+ * @param   cmd     short command type in int, see enum CMD
+ * @param   param   parameters for the command
+ * @return  execution status in int, see enum EXE in lib/cmd.h
  */
 EXE run_cmd(int cmd, char *param)
 {
     // printf("accepted: \"%s\", ", param);
+    int n_param;
 
     switch (cmd)
     {
@@ -46,11 +83,33 @@ EXE run_cmd(int cmd, char *param)
 
 int main()
 {
-
-    FILE *fp = fopen("RBM.ini", "r");
+    init_from_ini();
+    for (int i = 0; devices[i].name[0] != 0; i++)
     {
-        // read in the config
+        insert(devices_t, i);
+        node *timelines[devices[i].quantity];
+        for (int j = 0; j < devices[i].quantity; j++)
+            timelines[j] = init_timeline();
+        devices[i].timelines = timelines;
+    };
+    for (int i = 0; rooms[i].name[0] != 0; i++)
+    {
+        rooms[i].timeline = init_timeline();
     }
+
+    struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
+    time_t t1 = mktime(&tmp);
+    time_t t2 = time_after(t1, 2, 0);
+    request tmp0 = {1, "test tenant", t1, t2, 120, 5};
+    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100"};
+    request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100"};
+    request test[] = {tmp0, tmp1, tmp2};
+    request *success[1000];
+    request *fail[1000];
+    fcfs_schedule(test, success, fail);
+    prio_schedule(test, success, fail);
+    opti_schedule(test, success, fail);
+    return 0;
 
     // points to the pipe
     int readp, writep;
@@ -108,8 +167,7 @@ int main()
                 }
             }
 #ifdef _DEBUG
-            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n"
-                , cmd_int, cmd, param, execution);
+            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
 #endif
         } while (execution != RUN_EXIT);
 

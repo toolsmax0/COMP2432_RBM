@@ -1,16 +1,39 @@
 #pragma once
 
-// a single record of request
-typedef struct {
-    int priority;
-    char tenant[40];
-    char time[20];
-    int time_i;
-    char len[10];
-    int len_i;
-    int size;
-    char equip[40][2];
-}request;
+#include <time.h>
 
-// get an integer from a string of time.
-int get_time(char *time);
+/**
+ * @brief a single record of request
+ * 
+ * @param   priority  conference > meeting > presentation
+ * @param   tenant    tenant name in string
+ * @param   start     start time in struct tm
+ * @param   end       end time in struct tm
+ * @param   length    length of in !!minutes!!
+ * @param   people    number of people, if only devices are booked, people=0
+ * @param   device    device name in string
+ * @param   isvalid   whether it is a valid request
+ */
+typedef struct {
+    int priority; // Linux style
+    char tenant[40];
+    time_t start;
+    time_t end;
+    int length; // Minutes
+    int people;
+    int roomno; // the number of the room, which is its index in rooms[]
+    char device[2][40];
+    char isvalid;
+} request;
+
+// return a time after some period from t
+// supports negatigenesisve hr and min
+time_t time_after(time_t t, int hr, int min);
+
+// compare two time and return their difference
+// TODO
+double cmp_time(time_t a, time_t b);
+
+// check if the request is valid
+// TODO
+char check_valid(request *r);
