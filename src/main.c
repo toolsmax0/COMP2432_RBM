@@ -27,11 +27,6 @@
     for (int i = 0; i < n_##s; i++)                 \
         printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
 
-room rooms[1000];
-device devices[1000];
-// hashtable for devices
-device *devices_t[1000];
-
 /**
  * @brief initiate all available devices from RBM.ini
  * 
@@ -106,8 +101,8 @@ int main()
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);
     request tmp0 = {1, "test tenant", t1, t2, 120, 5};
-    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, "webcam_FHD", "screen_100"};
-    request tmp2 = {3, "device", t1, t2, 120, 0, "webcam_FHD", "screen_100"};
+    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100"};
+    request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100"};
     request test[] = {tmp0, tmp1, tmp2};
     request *success[1000];
     request *fail[1000];
