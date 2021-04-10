@@ -21,6 +21,7 @@ typedef struct {
     time_t end;
     int length; // Minutes
     int people;
+    int roomno; // the number of the room, which is its index in rooms[]
     char device[2][40];
     char isvalid;
 } request;
