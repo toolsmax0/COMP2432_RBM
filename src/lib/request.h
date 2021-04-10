@@ -5,25 +5,25 @@
 /**
  * @brief a single record of request
  * 
- * @param   priority  conference > meeting > presentation
+ * @param   priority  conference 0 > meeting 1 > presentation 2
  * @param   tenant    tenant name in string
- * @param   start     start time in struct tm
- * @param   end       end time in struct tm
+ * @param   start     start time in time_t
+ * @param   end       end time in time_t
  * @param   length    length of in !!minutes!!
  * @param   people    number of people, if only devices are booked, people=0
  * @param   device    device name in string
  * @param   isvalid   whether it is a valid request
  */
 typedef struct {
-    int priority; // Linux style
+    int priority; // Linux style, conference 0, meeting 1, presentation 2
     char tenant[40];
     time_t start;
     time_t end;
     int length; // Minutes
-    int people;
+    int people; 
     int roomno; // the number of the room, which is its index in rooms[]
     char device[2][40];
-    char isvalid;
+    char isvalid; // 0 invalid, 1 valid
 } request;
 
 // return a time after some period from t
