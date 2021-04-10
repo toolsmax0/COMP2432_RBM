@@ -25,3 +25,14 @@ void insert_node(node* newnode,node* target);
 // remove the target node
 // TODO
 void remove_node(node *target);
+
+// search for a node with the specified request starting from the given node
+// if direction>=0, search forwards, otherwise search backwards
+// TODO
+node *search_request(node *begin,request *r, int direction);
+
+
+// search for a begin time between two nodes, and return the address of the former node
+// begin indicates the starting node of search
+// if direction>=0, search forwards, otherwise search backwards
+node *search_time(node *begin,time_t t, int direction);
