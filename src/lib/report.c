@@ -1,3 +1,7 @@
+// #define _REP_DEBUG_ONLY
+
+#ifdef _REP_DEBUG_ONLY
+
 #include "report.h"
 #include "dictionary.h"
 #include <stdio.h>
@@ -224,4 +228,6 @@ int main()
     print_perform(s, f);
     return 0;
 }
+#endif
+
 #endif

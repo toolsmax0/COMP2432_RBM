@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef _REP_DEBUG_ONLY
 #include "request.h"
 
 /**
@@ -18,3 +19,4 @@ void print_booking(request success[], request fail[]);
  * @param   fail list of failed requests
  */
 void print_perform(request success[], request fail[]);
+#endif
