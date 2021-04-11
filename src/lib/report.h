@@ -10,6 +10,11 @@
  */
 void print_booking(request success[], request fail[]);
 
-// print the performance analysis
-// TODO
+
+/**
+ * @brief print the performance analysis
+ * 
+ * @param   success list of successful requests
+ * @param   fail list of failed requests
+ */
 void print_perform(request success[], request fail[]);

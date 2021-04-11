@@ -4,37 +4,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define _DEBUG
-
-/**
- * @brief initialize a target
- * 
- * @param val allocated varaiable name
- * @param f varaible fieldname storing its capacity/quantity
- * @param s section name of the keys in the ini file
- */
-#define INIT(val, f, s)                                 \
-    int n_##s = iniparser_getsecnkeys(d, #s);           \
-    const char *name_##s[n_##s];                        \
-    iniparser_getseckeys(d, #s, name_##s);              \
-    for (int i = 0; i < n_##s; i++)                     \
-    {                                                   \
-        sscanf(name_##s[i], #s ":%s", val[i].name);     \
-        val[i].f = iniparser_getint(d, name_##s[i], 0); \
-    }
-#define _INIT_DEBUG(val, f, s)                      \
-    printf("No. of " #s " available: %d\n", n_##s); \
-    for (int i = 0; i < n_##s; i++)                 \
-        printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
+// #define _DEBUG
 
 /**
  * @brief initiate all available devices from RBM.ini
- * 
- * @param 
  */
 int init_from_ini()
 {
+// initialize a target, val:variablename
+// val: variablename, f: field, s: ini section
+#define INIT(val, f, s)                                 \
+    int num_##s = iniparser_getsecnkeys(d, #s);         \
+    const char *name_##s[num_##s];                      \
+    iniparser_getseckeys(d, #s, name_##s);              \
+    for (int i = 0; i < num_##s; i++) {                 \
+        sscanf(name_##s[i], #s ":%s", val[i].name);     \
+        val[i].f = iniparser_getint(d, name_##s[i], 0); \
+    }
+#define _INIT_DEBUG(val, f, s)                        \
+    printf("No. of " #s " available: %d\n", num_##s); \
+    for (int i = 0; i < num_##s; i++)                 \
+        printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
+
     dictionary *d = iniparser_load("RBM.ini");
+
     INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
 

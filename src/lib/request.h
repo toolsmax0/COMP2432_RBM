@@ -11,6 +11,7 @@
  * @param   end       end time in time_t
  * @param   length    length of in !!minutes!!
  * @param   people    number of people, if only devices are booked, people=0
+ * @param   roomno    the number of the room, which is its index in rooms[]
  * @param   device    device name in string
  * @param   isvalid   whether it is a valid request
  */
