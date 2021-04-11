@@ -16,7 +16,7 @@
  * @param   isvalid   whether it is a valid request
  */
 typedef struct {
-    int priority; // Linux style, conference 0, meeting 1, presentation 2
+    int priority; // Linux style, conference 0, meeting 1, presentation 2, bookdevice 3
     char tenant[40];
     time_t start;
     time_t end;

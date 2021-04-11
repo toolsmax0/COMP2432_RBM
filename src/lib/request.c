@@ -1,10 +1,11 @@
 #include "request.h"
+#include "cmd.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
 
-// #define _REQ_DEBUG
+#define _REQ_DEBUG
 
 #define DATE_DEST(rq) &(rq->start.tm_year), &(rq->start.tm_mon), &(rq->start.tm_mday), &(rq->start.tm_hour), &(rq->start.tm_min)
 #define DEVICE_PAIRING(val)                                 \
@@ -28,34 +29,81 @@ time_t time_after(time_t t, int hr, int min)
     return mktime(&newtime);
 }
 
+void parse_request(CMD cmd, char *param, request *rq)
+{
+    struct tm s;
+    int n_param;
+    int len[2];
+
+#define SSCAN(n, str, rq, s, len)                                               \
+    n = sscanf(str, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",                        \
+               rq->tenant, &s.tm_year, &s.tm_mon, &s.tm_mday, &s.tm_hour, &s.tm_min, \
+               &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);
+    switch (cmd)
+    {
+    case addMeeting:
+        SSCAN(n_param, param, rq, s, len)
+        rq->isvalid = (n_param == 9 || n_param == 11);
+        rq->priority = 2;
+        break;
+    case addPresentation:
+        SSCAN(n_param, param, rq, s, len)
+        rq->isvalid = (n_param == 11);
+        rq->priority = 1;
+        break;
+    case addConference:
+        SSCAN(n_param, param, rq, s, len)
+        rq->isvalid = (n_param == 11);
+        rq->priority = 0;
+        break;
+    case bookDevice:
+        n_param = sscanf(
+            param, "-%s %d-%d-%d %d:%d %d.%d %s",
+            rq->tenant, &s.tm_year, &s.tm_mon, &s.tm_mday, &s.tm_hour, &s.tm_min,
+            &len[0], &len[1], rq->device[0]
+        );
+        rq->device[1][0] = 0;
+        rq->isvalid = (n_param == 9);
+        rq->priority = 4;
+        rq->people = 0;
+        break;
+
+    default:
+        // exit directly
+        // if cmd is addBatch/printBookings/endProgram
+        return;
+    }
+    s.tm_year -= 1900;
+    s.tm_mon -= 1;
+    rq->start = mktime(&s);
+    rq->end = time_after(rq->start, len[0], len[1]);
+    rq->roomno = -1;
+    rq->length = 60 * len[0] + len[1];
+
+    printf("scanned: %-2d ", n_param);
+    printf(
+            "tanant: %s "
+            "length@%-3d p@%-2d devices: %-10s %-10s device-match@%d isvalid:%d time: %s",
+           rq->tenant,
+           rq->length, rq->people, rq->device[0], rq->device[1],
+           DEVICE_PAIRING(rq), rq->isvalid,
+           asctime(localtime(&rq->start)) // asctime comes with \n automatically
+    );
+}
+
 #ifdef _REQ_DEBUG
 // simulates parameter parsing
-int main(int argc, char **argv)
+int main()
 {
     char param[128];
     request *rq = malloc(sizeof(request));
-    int n_param;
-    int len[2]; // store hr and min (temp)
-    char device1[40], device2[40];
 
-    scanf("%[^\n\r\f\v]", param);
-    printf("input: %s\n", param);
-    n_param = sscanf(param, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",
-                     rq->tenant, DATE_DEST(rq), &len[0], &len[1],
-                     &(rq->people), rq->device[0], rq->device[1]);
-    parse_time(rq, len[0], len[1]);
-
-    // only fits addMeeting/conference now...
-    // below is a sample input
-    // -tenant_A 2021-4-1 1:11 1.30 10 device1 device2
-    printf("scanned: %d\n", n_param);
-    printf("struct request: \n"
-            "  tanant: %s\n"
-            "  time:   %s"
-            "  length@%d p@%d devices: %s %s device-match@%d\n",
-           rq->tenant,
-           asctime(&(rq->start)), // asctime comes with \n automatically
-           rq->length, rq->people, rq->device[0], rq->device[1],
-           DEVICE_PAIRING(rq));
+    parse_request(addMeeting, "-tenant_A 2021-4-1 1:11 1.30 10", rq);
+    parse_request(addPresentation, "-tenant_B 2021-4-1 1:11 1.30 10 device1 device2", rq);
+    parse_request(addConference, "-tenant_C 2021-4-1 1:11 1.30 10 device1 device2", rq);
+    parse_request(bookDevice, "-tenant_D 2021-4-1 1:11 1.30 device1", rq);
+    parse_request(addBatch, "-xxxx", rq);
+    parse_request(printBookings, "-fcfs", rq);
+    
 }
 #endif
