@@ -19,6 +19,11 @@ typedef struct
 
 
 
+extern room rooms[];
+extern device devices[];
+// hashtable for devices
+extern device *devices_t[];
+
 // TODO
 int insert(device *a[], int x);
 

@@ -83,6 +83,9 @@ EXE run_cmd(int cmd, char *param)
     }
 }
 
+room rooms[1000];
+device devices[1000];
+device *devices_t[1000];
 int main()
 {
     init_from_ini();
