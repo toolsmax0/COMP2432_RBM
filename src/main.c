@@ -4,7 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// #define _DEBUG
+#define _DEBUG
+
+room rooms[1000];
+device devices[1000];
+// hashtable for devices
+device *devices_t[1000];
+int n_devices, n_rooms;
 
 /**
  * @brief initiate all available devices from RBM.ini
@@ -30,6 +36,9 @@ int init_from_ini()
 
     INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
+    n_devices = num_devices;
+    n_rooms = num_rooms;
+
 
 #ifdef _DEBUG
     _INIT_DEBUG(devices, quantity, devices);

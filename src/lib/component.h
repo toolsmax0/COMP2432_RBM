@@ -19,11 +19,6 @@ typedef struct
 
 
 
-room rooms[1000];
-device devices[1000];
-// hashtable for devices
-device *devices_t[1000];
-
 // TODO
 int insert(device *a[], int x);
 

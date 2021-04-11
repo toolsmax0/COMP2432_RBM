@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define _REP_DEBUG
+// #define _REP_DEBUG
 
 // static consts that must be defined in main.c
 static const int MAX_TENANT = 5;
