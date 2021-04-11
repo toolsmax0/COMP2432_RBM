@@ -19,8 +19,6 @@
  */
 time_t time_after(time_t t, int hr, int min)
 {
-
-    // very unlikely to overflow, but still possible
     struct tm *t0 = localtime(&t);
 
     struct tm newtime = *t0;
@@ -35,25 +33,26 @@ void parse_request(CMD cmd, char *param, request *rq)
     int n_param;
     int len[2];
 
-#define SSCAN(n, str, rq, s, len)                                               \
-    n = sscanf(str, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",                        \
-               rq->tenant, &s.tm_year, &s.tm_mon, &s.tm_mday, &s.tm_hour, &s.tm_min, \
-               &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);
+    if (addMeeting <= cmd <= addConference)
+    {
+        n_param = sscanf(
+            param, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",
+            rq->tenant, &(s.tm_year), &(s.tm_mon), &(s.tm_mday), &(s.tm_hour), &(s.tm_min),
+            &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]
+        );
+        rq->isvalid = (n_param == 11);
+    }
     switch (cmd)
     {
     case addMeeting:
-        SSCAN(n_param, param, rq, s, len)
-        rq->isvalid = (n_param == 9 || n_param == 11);
+        // device is optional
+        rq->isvalid |= (n_param == 9);
         rq->priority = 2;
         break;
     case addPresentation:
-        SSCAN(n_param, param, rq, s, len)
-        rq->isvalid = (n_param == 11);
         rq->priority = 1;
         break;
     case addConference:
-        SSCAN(n_param, param, rq, s, len)
-        rq->isvalid = (n_param == 11);
         rq->priority = 0;
         break;
     case bookDevice:
@@ -68,27 +67,32 @@ void parse_request(CMD cmd, char *param, request *rq)
         rq->people = 0;
         break;
 
+    case addBatch:
+        break;
+    case printBookings:
+        break;
+    // case endProgram
+    // no parsing is needed, so ignored.
     default:
         // exit directly
-        // if cmd is addBatch/printBookings/endProgram
+        // if cmd is others
         return;
     }
     s.tm_year -= 1900;
     s.tm_mon -= 1;
+    s.tm_sec = 0;
     rq->start = mktime(&s);
     rq->end = time_after(rq->start, len[0], len[1]);
     rq->roomno = -1;
     rq->length = 60 * len[0] + len[1];
 
-    printf("scanned: %-2d ", n_param);
-    printf(
-            "tanant: %s "
-            "length@%-3d p@%-2d devices: %-10s %-10s device-match@%d isvalid:%d time: %s",
-           rq->tenant,
-           rq->length, rq->people, rq->device[0], rq->device[1],
-           DEVICE_PAIRING(rq), rq->isvalid,
-           asctime(localtime(&rq->start)) // asctime comes with \n automatically
-    );
+    // printf("scanned: %-2d ", n_param);
+    // printf(
+    //         "tanant: %s length@%-3d p@%-2d devices: %-10s %-10s device-match@%d isvalid:%d time: %s",
+    //        rq->tenant, rq->length, rq->people, rq->device[0], rq->device[1],
+    //        DEVICE_PAIRING(rq), rq->isvalid,
+    //        asctime(localtime(&rq->start)) // asctime comes with \n automatically
+    // );
 }
 
 #ifdef _REQ_DEBUG
