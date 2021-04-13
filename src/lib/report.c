@@ -1,6 +1,11 @@
-// #define _REP_DEBUG_ONLY
+// uncomment this macro to enable report debugging
+// compile and run with 
+// $ gcc report.c -o report.out; ./report.out
+// #define _REPORT_DEBUG_ALONE
 
-#ifdef _REP_DEBUG_ONLY
+// NOTE: all functions are already moved to main.c
+// this file along with .h file are kept for future debugging needs
+#ifdef _REPORT_DEBUG_ALONE
 
 #include "report.h"
 #include "dictionary.h"

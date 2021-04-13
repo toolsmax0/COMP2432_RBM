@@ -1,6 +1,8 @@
 #pragma once
 
-#ifdef _REP_DEBUG_ONLY
+// NOTE: all functions are already moved to main.c
+// this file along with .c file are kept for future debugging needs
+#ifdef _REPORT_DEBUG_ALONE
 #include "request.h"
 
 /**

@@ -27,6 +27,8 @@ time_t time_after(time_t t, int hr, int min)
     return mktime(&newtime);
 }
 
+// move this into main.c later
+// merge with run_cmd() before any execution
 void parse_request(CMD cmd, char *param, request *rq)
 {
     struct tm s;
@@ -78,13 +80,17 @@ void parse_request(CMD cmd, char *param, request *rq)
         // if cmd is others
         return;
     }
-    s.tm_year -= 1900;
-    s.tm_mon -= 1;
-    s.tm_sec = 0;
-    rq->start = mktime(&s);
-    rq->end = time_after(rq->start, len[0], len[1]);
-    rq->roomno = -1;
-    rq->length = 60 * len[0] + len[1];
+    if (addMeeting <= cmd <= bookDevice)
+    {
+        s.tm_year -= 1900;
+        s.tm_mon -= 1;
+        s.tm_sec = 0;
+        rq->start = mktime(&s);
+        rq->end = time_after(rq->start, len[0], len[1]);
+        rq->roomno = -1;
+        rq->length = 60 * len[0] + len[1];
+    }
+    
 
     // printf("scanned: %-2d ", n_param);
     // printf(
