@@ -83,13 +83,15 @@ EXE run_cmd(int cmd, char *param)
 
 room rooms[1000];
 device devices[1000];
-device *devices_t[1000];
+int devices_t[1000];
+const int PRIME = 997;
 int main()
 {
     init_from_ini();
+    memset(devices_t,-1,sizeof(devices_t));
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
-        insert(devices_t, i);
+        insert(i);
         node *timelines[devices[i].quantity];
         for (int j = 0; j < devices[i].quantity; j++)
             timelines[j] = init_timeline();
