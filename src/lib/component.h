@@ -1,21 +1,31 @@
 #pragma once
 
 #include <stdio.h>
+#include "timeline.h"
 
 typedef struct {
     char name[40];
     int capacity;
-}room;
+    node *timeline;
+} room;
 
-// use hashtable to store equipment
+// use hashtable to store device
 typedef struct
 {
     char name[40];
     int quantity;
-    int occupied;
-} equipment;
+    node **timelines;
+} device;
 
 
-int insert(equipment *a[], equipment *x);
 
-int search(equipment *a[], equipment *x);
+extern room rooms[];
+extern device devices[];
+// hashtable for devices
+extern device *devices_t[];
+
+// TODO
+int insert(device *a[], int x);
+
+// search for a device in the hashtable, returning its index in the device array. Return -1 if not found.
+int search(device *a[], device *x);
