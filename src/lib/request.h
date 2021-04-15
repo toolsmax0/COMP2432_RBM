@@ -7,15 +7,16 @@
  * 
  * @param   priority  conference > meeting > presentation > device only
  * @param   tenant    tenant name in string
- * @param   start     start time in struct tm
- * @param   end       end time in struct tm
+ * @param   start     start time in time_t
+ * @param   end       end time in time_t
  * @param   length    length of in !!minutes!!
  * @param   people    number of people, if only devices are booked, people=0
+ * @param   roomno    the number of the room, which is its index in rooms[]
  * @param   device    device name in string
  * @param   isvalid   whether it is a valid request
  */
 typedef struct {
-    int priority; // Linux style, 0 for conference and 3 for device booking
+    int priority; // Linux style, conference 0, meeting 1, presentation 2, bookdevice 3
     char tenant[40];
     time_t start;
     time_t end;

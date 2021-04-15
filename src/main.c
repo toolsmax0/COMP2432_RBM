@@ -7,12 +7,10 @@
 #define _DEBUG
 
 /**
- * @brief initialize a target
- * 
- * @param val allocated varaiable name
- * @param f varaible fieldname storing its capacity/quantity
- * @param s section name of the keys in the ini file
+ * @brief initiate all available devices from RBM.ini
  */
+int init_from_ini()
+{
 #define INIT(val, f, s)                                 \
     int n_##s = iniparser_getsecnkeys(d, #s);           \
     const char *name_##s[n_##s];                        \
@@ -26,14 +24,6 @@
     printf("No. of " #s " available: %d\n", n_##s); \
     for (int i = 0; i < n_##s; i++)                 \
         printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
-
-/**
- * @brief initiate all available devices from RBM.ini
- * 
- * @param 
- */
-int init_from_ini()
-{
     dictionary *d = iniparser_load("RBM.ini");
     INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
@@ -84,6 +74,7 @@ EXE run_cmd(int cmd, char *param)
 room rooms[1000];
 device devices[1000];
 device *devices_t[1000];
+
 int main()
 {
     init_from_ini();
