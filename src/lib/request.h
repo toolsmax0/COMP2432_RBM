@@ -5,7 +5,7 @@
 /**
  * @brief a single record of request
  * 
- * @param   priority  conference 0 > meeting 1 > presentation 2
+ * @param   priority  conference > meeting > presentation > device only
  * @param   tenant    tenant name in string
  * @param   start     start time in time_t
  * @param   end       end time in time_t
@@ -21,17 +21,18 @@ typedef struct {
     time_t start;
     time_t end;
     int length; // Minutes
-    int people; 
+    int people; // 0 means device booking
     int roomno; // the number of the room, which is its index in rooms[]
     char device[2][40];
-    char isvalid; // 0 invalid, 1 valid
+    char isvalid; // 0 if invalid, 1 otherwise
 } request;
 
 // return a time after some period from t
 // supports negatigenesisve hr and min
+// hr and min does not need to fit in the scale, for example, hr=25,min=70 is valid
 time_t time_after(time_t t, int hr, int min);
 
-// compare two time and return their difference
+// compare two time and return their difference (a-b)
 // TODO
 double cmp_time(time_t a, time_t b);
 
