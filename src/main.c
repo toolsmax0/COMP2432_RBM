@@ -43,18 +43,91 @@ int init_from_ini()
  * @param   param   parameters for the command
  * @return  execution status in int, see enum EXE in lib/cmd.h
  */
-EXE run_cmd(int cmd, char *param)
+EXE run_cmd(int cmd, char *param, request *rq)
 {
     // printf("accepted: \"%s\", ", param);
-    int n_param;
+    int n_param, duration[2];
+    struct tm s; // start time
+
+#define HANDLE_PARAM_ERR \
+    if (!rq->isvalid)    \
+        return RUN_ERROR_PARAM;
+#define SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, len)                                        \
+    n_param = sscanf(                                                                   \
+        param, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",                                     \
+        rq->tenant, &(s.tm_year), &(s.tm_mon), &(s.tm_mday), &(s.tm_hour), &(s.tm_min), \
+        &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);                   \
+    rq->isvalid = (n_param == 11);
+#define SCAN_PARAM_POSTPROCESS(rq, s, len)           \
+    s.tm_year -= 1900;                               \
+    s.tm_mon -= 1;                                   \
+    s.tm_sec = 0;                                    \
+    rq->start = mktime(&s);                          \
+    rq->end = time_after(rq->start, len[0], len[1]); \
+    rq->roomno = -1;                                 \
+    rq->length = 60 * len[0] + len[1];
 
     switch (cmd)
     {
     case addMeeting:
+        SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
+        rq->isvalid |= (n_param == 9);
+        rq->priority = 2;
+        SCAN_PARAM_POSTPROCESS(rq, s, duration)
+
+        HANDLE_PARAM_ERR
+        // addMeeting executions
+        puts("executing addMeeting");
+        break;
+
     case addPresentation:
+        SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
+        rq->priority = 1;
+        SCAN_PARAM_POSTPROCESS(rq, s, duration)
+
+        HANDLE_PARAM_ERR
+        // addPresentation executions
+        puts("executing addPresentation");
+        break;
+
     case addConference:
+        SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
+        rq->priority = 0;
+        SCAN_PARAM_POSTPROCESS(rq, s, duration)
+
+        HANDLE_PARAM_ERR
+        // addConference executions
+        puts("executing addConference");
+        break;
+
     case bookDevice:
+        n_param = sscanf(
+            param, "-%s %d-%d-%d %d:%d %d.%d %s",
+            rq->tenant, &s.tm_year, &s.tm_mon, &s.tm_mday, &s.tm_hour, &s.tm_min,
+            &duration[0], &duration[1], rq->device[0]);
+        rq->device[1][0] = 0;
+        rq->isvalid = (n_param == 9);
+        rq->priority = 4;
+        rq->people = 0;
+        SCAN_PARAM_POSTPROCESS(rq, s, duration)
+
+        HANDLE_PARAM_ERR
+        // bookDevice executions
+        puts("executing bookDevice");
+        break;
+
     case addBatch:
+        char filename[40];
+        n_param = sscanf("-%s", filename);
+        // TODO: fopen(filename) to check whether file exists
+        // the above also affects the following return status RUN_ERROR_PARAM
+        if (n_param != 1)
+            return RUN_ERROR_PARAM;
+
+        // bookDevice executions
+        puts("executing bookDevice");
+        break;
+
     case printBookings:
         /* code */
         // if param not correct,
@@ -69,11 +142,12 @@ EXE run_cmd(int cmd, char *param)
     default:
         return RUN_ERROR_PARSING;
     }
+    return RUN_SUCCESS;
 }
-
 room rooms[1000];
 device devices[1000];
 device *devices_t[1000];
+request requests[10000];
 
 int main()
 {
@@ -126,6 +200,7 @@ int main()
     else if (cid > 0)
     {
         // close unneccessary pipes and assign the rest to variables for best readability.
+        request *req = requests;
         close(p[0]);
         writep = p[1];
         readp = p[2];
@@ -141,7 +216,7 @@ int main()
 
             cmd_int = cmd_to_int(cmd);
             // < 0 then error occured
-            if ((execution = run_cmd(cmd_int, param)) < RUN_EXIT)
+            if ((execution = run_cmd(cmd_int, param, req)) < RUN_EXIT)
             {
                 switch (execution)
                 {
