@@ -1,16 +1,13 @@
 #include "timeline.h"
+#include "request.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // initiates a timeline by setting the first & last value
 node *init_timeline()
 {
-    struct tm genesis = {0, 0, 0, 1, 0, 0};
-    struct tm eternity = {0, 0, 0, 1, 0, 130};
-    time_t t1 = mktime(&genesis);
-    time_t t2 = mktime(&eternity);
-    request tmp1 = {0, 0, t1, t1};
-    request tmp2 = {0, 0, t2, t2};
+    request tmp1 = {0, 0, genesis, genesis};
+    request tmp2 = {0, 0, eternity, eternity};
     request *r1 = malloc(sizeof(request));
     request *r2 = malloc(sizeof(request));
     *r1 = tmp1;
@@ -35,4 +32,26 @@ void insert_node(node *newnode, node *target)
     newnode->prev = target;
     newnode->next = next;
     next->prev = newnode;
+}
+
+void remove_node(node *t)
+{
+    node *p = t->prev;
+    node *n = t->next;
+    p->next = n;
+    n->prev = p;
+    t = NULL;
+}
+
+node *search_request(node *begin, request *r, int direction)
+{
+    do
+    {
+        if (begin->r == r)
+            return begin;
+        if (direction >= 0)
+            begin = begin->next;
+        else
+            begin = begin->prev;
+    } while (begin != NULL);
 }

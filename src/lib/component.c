@@ -1,11 +1,10 @@
 #include "component.h"
 #include <string.h>
-#define d(x) ((PRIME + x - hash_code(devices+devices_t[x]) % PRIME))
+#define d(x) ((PRIME + x - home[x]) % PRIME)
 #define n(x) (devices+devices_t[x])
 
-int hash_code(device *d)
+int hash_code(char *s)
 {
-    char *s = d->name;
     int x = 0;
     while (*s)
     {
@@ -17,10 +16,11 @@ int hash_code(device *d)
 int insert(int i)
 {
     int *a = devices_t;
-    int x = hash_code(devices+i);
+    int x = hash_code(devices[i].name);
     if (a[x] < 0)
     {
         a[x] = i;
+        home[x]=i;
         return x;
     }
     int m = x;
@@ -30,26 +30,30 @@ int insert(int i)
         if (a[t] < 0)
         {
             a[t] = i;
+            home[t]=x;
             return t;
         }
         if (d(t) < ((PRIME + t - x) % PRIME))
         {
             int tmp = a[t];
-            a[t] = x;
-            x = tmp;
+            a[t] = i;
+            i=tmp;
+            tmp=home[t];
+            home[t]=x;
+            x=tmp;
         }
     }
     return -1;
 }
 
-int search(device *x)
+int search(char *s)
 {
-    int i = hash_code(x);
+    int i = hash_code(s);
     int m = i;
     int *a = devices_t;
     for (; a[i] > 0 && d(i) > ((PRIME + i - m) % PRIME); i = (i + 1) % PRIME)
     {
-        if (!strcmp(x->name, n(i)->name))
+        if (!strcmp(s, n(i)->name))
             return i;
     }
     return -1;
