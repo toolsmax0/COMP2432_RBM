@@ -209,8 +209,10 @@ int main()
             sscanf(input, "%s %[^;]", cmd, param);
 
             cmd_int = cmd_to_int(cmd);
+            request *rq = malloc(sizeof(request));
+            // TODO: append new request into the timeline
             // < 0 then error occured
-            if ((execution = run_cmd(cmd_int, param)) < RUN_EXIT)
+            if ((execution = run_cmd(cmd_int, param, rq)) < RUN_EXIT)
             {
                 switch (execution)
                 {
