@@ -22,10 +22,14 @@ typedef struct
 extern room rooms[];
 extern device devices[];
 // hashtable for devices
-extern device *devices_t[];
+extern int devices_t[];
+extern int home[];
+// the prime number used in the hashing function
+extern const int PRIME;
 
-// TODO
-int insert(device *a[], int x);
+int hash_code(device *d);
+
+int insert(int x);
 
 // search for a device in the hashtable, returning its index in the device array. Return -1 if not found.
-int search(device *a[], device *x);
+int search(device *x);
