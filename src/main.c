@@ -119,13 +119,19 @@ EXE run_cmd(int cmd, char *param, request *rq)
     case addBatch:
         char filename[40];
         n_param = sscanf("-%s", filename);
-        // TODO: fopen(filename) to check whether file exists
-        // the above also affects the following return status RUN_ERROR_PARAM
         if (n_param != 1)
             return RUN_ERROR_PARAM;
+        // the above also affects the following return status RUN_ERROR_PARAM
+        FILE *f = fopen(filename, "r");
+        if (f == NULL)
+        {
+            printf("Failed to open %s.\n", filename);
+            break;
+        }
+        IStreams[++isi] = f;
+        stdin = f;
 
-        // bookDevice executions
-        puts("executing bookDevice");
+        puts("executing addBatch");
         break;
 
     case printBookings:
@@ -150,10 +156,13 @@ int devices_t[1000];
 int home[1000];
 const int PRIME = 997;
 request requests[10000];
+FILE *IStreams[100];
+int isi = 0;
 
 void init()
 {
     init_from_ini();
+    IStreams[0] = stdin;
     memset(devices_t, -1, sizeof(devices_t));
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
@@ -175,6 +184,7 @@ void init()
 
 int main()
 {
+    init();
     struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);
@@ -209,8 +219,8 @@ int main()
     // parent process
     else if (cid > 0)
     {
-        // close unneccessary pipes and assign the rest to variables for best readability.
         request *req = requests;
+        // close unneccessary pipes and assign the rest to variables for best readability.
         close(p[0]);
         writep = p[1];
         readp = p[2];
@@ -221,7 +231,16 @@ int main()
         char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
         do
         {
-            scanf("%[^;];%*[^\f\n\r\t\v]", input);
+            if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
+            {
+                if(!isi){
+                    puts("ERROR: No more commands to be read, exiting.");
+                    return -1;
+                }
+                fclose(IStreams[isi--]);
+                stdin = IStreams[isi];
+                continue;
+            }
             sscanf(input, "%s %[^;]", cmd, param);
 
             cmd_int = cmd_to_int(cmd);
