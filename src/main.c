@@ -175,6 +175,7 @@ void init()
 
 int main()
 {
+    init();
     struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);
