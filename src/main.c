@@ -117,6 +117,11 @@ EXE run_cmd(int cmd, char *param, request *rq)
         break;
 
     case addBatch:
+        if (isi >= 99)
+        {
+            puts("ERROR:You have opened too many batch files, exiting. Is their a recursive reference?");
+            return -1;
+        }
         char filename[40];
         n_param = sscanf("-%s", filename);
         if (n_param != 1)
@@ -233,7 +238,8 @@ int main()
         {
             if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
             {
-                if(!isi){
+                if (!isi)
+                {
                     puts("ERROR: No more commands to be read, exiting.");
                     return -1;
                 }
