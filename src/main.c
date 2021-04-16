@@ -67,8 +67,10 @@ EXE run_cmd(int cmd, char *param, request *rq)
     rq->length = 60 * len[0] + len[1];
 
     switch (cmd)
+    {
     case addMeeting:
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
+        // the two devices are optional
         rq->isvalid |= (n_param == 9);
         rq->priority = 2;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
@@ -124,7 +126,7 @@ EXE run_cmd(int cmd, char *param, request *rq)
         if (f == NULL)
         {
             printf("Failed to open %s.\n", filename);
-            break;
+            return RUN_ERROR_PARAM;
         }
         IStreams[++isi] = f;
         stdin = f;
