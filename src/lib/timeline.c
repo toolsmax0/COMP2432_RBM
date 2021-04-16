@@ -27,6 +27,11 @@ node *init_timeline()
  */
 void insert_node(node *newnode, node *target)
 {
+    if (newnode == NULL || target == NULL)
+    {
+        printf("insert_node(%x, %x): Invalid Arguments.\n", newnode, target);
+        return;
+    }
     node *next = target->next;
     target->next = newnode;
     newnode->prev = target;
@@ -36,6 +41,8 @@ void insert_node(node *newnode, node *target)
 
 void remove_node(node *t)
 {
+    if (t == NULL)
+        return;
     node *p = t->prev;
     node *n = t->next;
     p->next = n;
@@ -45,6 +52,8 @@ void remove_node(node *t)
 
 node *search_request(node *begin, request *r, int direction)
 {
+    if (begin == NULL)
+        return NULL;
     do
     {
         if (begin->r == r)
@@ -54,4 +63,32 @@ node *search_request(node *begin, request *r, int direction)
         else
             begin = begin->prev;
     } while (begin != NULL);
+    return NULL;
+}
+
+node *search_time(node *begin, time_t t, int direction)
+{
+    if (direction < 0)
+        begin = begin->prev;
+    node *next = begin->next;
+    while (begin != NULL && next != NULL)
+    {
+        if (cmp_time(begin->r->end, t) < 0 && cmp_time(next->r->start, t) > 0)
+            return begin;
+        if (direction >= 0)
+            begin = begin->next, next = next->next;
+        else
+            begin = begin->prev, next = next->prev;
+    }
+    return NULL;
+}
+
+node *search_slot(node *begin, time_t start, time_t end, int direction)
+{
+    node *next = begin;
+    begin = search_time(begin, start, direction);
+    next = search_time(next, end, direction);
+    if (begin == next)
+        return begin;
+    return NULL;
 }
