@@ -146,15 +146,18 @@ EXE run_cmd(int cmd, char *param, request *rq)
 }
 room rooms[1000];
 device devices[1000];
-device *devices_t[1000];
+int devices_t[1000];
+int home[1000];
+const int PRIME = 997;
 request requests[10000];
 
-int main()
+void init()
 {
     init_from_ini();
+    memset(devices_t, -1, sizeof(devices_t));
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
-        insert(devices_t, i);
+        insert(i);
         node *timelines[devices[i].quantity];
         for (int j = 0; j < devices[i].quantity; j++)
             timelines[j] = init_timeline();
@@ -164,7 +167,14 @@ int main()
     {
         rooms[i].timeline = init_timeline();
     }
+    struct tm genesis_s = {0, 0, 0, 1, 0, 0};
+    struct tm eternity_s = {0, 0, 0, 1, 0, 130};
+    genesis = mktime(&genesis_s);
+    eternity = mktime(&eternity_s);
+}
 
+int main()
+{
     struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);

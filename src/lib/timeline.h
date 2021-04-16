@@ -23,17 +23,21 @@ node*    init_timeline();
 void insert_node(node* newnode,node* target);
 
 // remove the target node
-// TODO
 void remove_node(node *target);
 
 // search for a node with the specified request starting from the given node
 // if direction>=0, search forwards, otherwise search backwards
-// TODO
+// return null if not found
 node *search_request(node *begin,request *r, int direction);
 
 
 // search for a begin time between two nodes, and return the address of the former node
 // begin indicates the starting node of search
 // if direction>=0, search forwards, otherwise search backwards
-// TODO
+// return null if not found
 node *search_time(node *begin,time_t t, int direction);
+
+// search for a time slot between two nodes, returning the address of the former node.
+// search forwards if direction>=0, vice versa
+// return null if not found
+node *search_slot(node *begin, time_t start, time_t end, int direction);
