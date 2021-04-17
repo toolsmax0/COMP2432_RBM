@@ -1,4 +1,5 @@
 #pragma once
+#define _REPORT_DEBUG_ALONE
 
 // NOTE: all functions are already moved to main.c
 // this file along with .c file are kept for future debugging needs
