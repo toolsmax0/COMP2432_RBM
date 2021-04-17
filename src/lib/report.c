@@ -52,11 +52,11 @@ const char *TYPE[] = {
 #define ANSI_BLUE "\x1b[34m"
 #define ANSI_DEFAULT "\x1b[0m"
 
-#define ISLAST(arr, i) arr[i].tenant[0] != 0
-#define ISVALID(arr, i) arr[i].isvalid
+#define ISLAST(arr, i) arr[i]->tenant[0] != 0
+#define ISVALID(arr, i) arr[i]->isvalid
 #define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = &src[src_i];
 
-void print_booking(request success[], request fail[], char *algo)
+void print_booking(request *success[], request *fail[], char *algo)
 {
 
 // several constant values
@@ -77,7 +77,7 @@ void print_booking(request success[], request fail[], char *algo)
         if (!ISVALID(src, i)) continue;                       \
         FOREACH_TENANT(                                       \
             ti,                                               \
-            if (strcmp(TENANTS[ti], src[i].tenant) == 0)      \
+            if (strcmp(TENANTS[ti], src[i]->tenant) == 0)      \
             { ADD_TO_QUEUE(src, dest, counter, i, ti) break; }\
     )}
 
@@ -144,7 +144,7 @@ void print_booking(request success[], request fail[], char *algo)
     puts("\n" END ANSI_DEFAULT);
 }
 
-void print_perform(request success[], request fail[], char *algo)
+void print_perform(request *success[], request *fail[], char *algo)
 {
 
     int n_scss = 0, n_fail = 0, si, fi;
@@ -171,8 +171,8 @@ void print_perform(request success[], request fail[], char *algo)
     for (int i = 0; ISLAST(success, i); i++)
     {
         if (!ISVALID(success, i)) continue;
-        if (0 <= success[i].roomno < MAX_ROOM)
-            ADD_TO_QUEUE(success, queue_r, counter_r, i, success[i].roomno)
+        if (0 <= success[i]->roomno < MAX_ROOM)
+            ADD_TO_QUEUE(success, queue_r, counter_r, i, success[i]->roomno)
         else
             puts(ANSI_RED "ERROR when printing\n" ANSI_BLUE);
     }
@@ -185,9 +185,9 @@ void print_perform(request success[], request fail[], char *algo)
         if (!ISVALID(success, i)) continue;
         for (int j = 0; j < MAX_DEVICE; j++)
         {
-            if (strcmp(DEVICE[j], success[i].device[0]) == 0)
+            if (strcmp(DEVICE[j], success[i]->device[0]) == 0)
                 ADD_TO_QUEUE(success, queue_d, counter_d, i, j)
-            if (strcmp(DEVICE[j], success[i].device[1]) == 0)
+            if (strcmp(DEVICE[j], success[i]->device[1]) == 0)
                 ADD_TO_QUEUE(success, queue_d, counter_d, i, j)
         }
     }
