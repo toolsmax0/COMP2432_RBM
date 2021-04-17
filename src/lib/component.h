@@ -27,9 +27,9 @@ extern int home[];
 // the prime number used in the hashing function
 extern const int PRIME;
 
-int hash_code(device *d);
+int hash_code(char *s);
 
 int insert(int x);
 
 // search for a device in the hashtable, returning its index in the device array. Return -1 if not found.
-int search(device *x);
+int search(char *x);

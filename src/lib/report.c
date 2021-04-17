@@ -1,7 +1,7 @@
 // uncomment this macro to enable report debugging
 // compile and run with 
 // $ gcc report.c -o report.out; ./report.out
-// #define _REPORT_DEBUG_ALONE
+#define _REPORT_DEBUG_ALONE
 
 // NOTE: all functions are already moved to main.c
 // this file along with .h file are kept for future debugging needs
@@ -56,7 +56,7 @@ const char *TYPE[] = {
 #define ISVALID(arr, i) arr[i].isvalid
 #define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = &src[src_i];
 
-void print_booking(request success[], request fail[])
+void print_booking(request success[], request fail[], char *algo)
 {
 
 // several constant values
@@ -144,7 +144,7 @@ void print_booking(request success[], request fail[])
     puts("\n" END ANSI_DEFAULT);
 }
 
-void print_perform(request success[], request fail[])
+void print_perform(request success[], request fail[], char *algo)
 {
 
     int n_scss = 0, n_fail = 0, si, fi;

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define _REQ_DEBUG
+// #define _REQ_DEBUG
 
 #define DATE_DEST(rq) &(rq->start.tm_year), &(rq->start.tm_mon), &(rq->start.tm_mday), &(rq->start.tm_hour), &(rq->start.tm_min)
 #define DEVICE_PAIRING(val)                                                                               \
