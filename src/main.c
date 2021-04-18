@@ -204,7 +204,6 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         schedule(type);
         break;
 
-
     case endProgram:
         return RUN_EXIT;
     case INVALID:
@@ -242,6 +241,7 @@ void init()
 int main()
 {
     init();
+    printf("PID: %d.\n", getpid());
     struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);
@@ -253,6 +253,7 @@ int main()
     request *fail[1000];
     fcfs_schedule(test, success, fail);
     opti_schedule(test, success, fail);
+    schedule(1);
     return 0;
 
     int cmd_int, execution;
@@ -298,7 +299,7 @@ int main()
         if (newreq)
             requestno++;
 #ifdef _DEBUG
-            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
+        printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
 #endif
     } while (execution != RUN_EXIT);
 
@@ -369,6 +370,7 @@ void schedule(int algo)
         }
         else if (cid)
         {
+            printf("Child %d, PID %d.\n",i,cid);
             close(pipes[i][0][0]);
             writec[i] = pipes[i][0][1];
             readc[i] = pipes[i][1][0];
@@ -443,7 +445,7 @@ void schedule(int algo)
     }
     else
     {
-        request *success[10000] = {}, *fail[01000] = {};
+        request *success[10000] = {}, *fail[10000] = {};
         char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
         char *type;
         while (read(readp, ibuf, 1))
