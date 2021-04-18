@@ -44,10 +44,7 @@ int allocateRoom(request *rqs, request *success[]){
 
         if ((rqs->start>success[i]->start && rqs->start<success[i]->end)||(rqs->end>success[i]->start && rqs->end<success[i]->end)) continue;
 
-       
-        room a,b;
-        long c=&a - &b;
-        rqs->roomno= sortedRooms[i] - &rooms[0];
+        rqs->roomno= (sortedRooms[i] - &rooms[0])/sizeof(room);
         return 1;
 
     }
