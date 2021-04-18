@@ -1,8 +1,5 @@
 #pragma once
 
-// NOTE: all functions are already moved to main.c
-// this file along with .c file are kept for future debugging needs
-#ifdef _REPORT_DEBUG_ALONE
 #include "request.h"
 
 /**
@@ -21,4 +18,3 @@ void print_booking(request success[], request fail[]);
  * @param   fail list of failed requests
  */
 void print_perform(request success[], request fail[]);
-#endif

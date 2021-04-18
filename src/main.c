@@ -6,6 +6,10 @@
 
 #define _DEBUG
 
+// collection of num_tenants, num_rooms, num_devices
+int n_components[3];
+tenant tenants[1000];
+
 /**
  * @brief initiate all available devices from RBM.ini
  */
@@ -15,8 +19,7 @@ int init_from_ini()
     int n_##s = iniparser_getsecnkeys(d, #s);           \
     const char *name_##s[n_##s];                        \
     iniparser_getseckeys(d, #s, name_##s);              \
-    for (int i = 0; i < n_##s; i++)                     \
-    {                                                   \
+    for (int i = 0; i < n_##s; i++) {                   \
         sscanf(name_##s[i], #s ":%s", val[i].name);     \
         val[i].f = iniparser_getint(d, name_##s[i], 0); \
     }
@@ -24,13 +27,20 @@ int init_from_ini()
     printf("No. of " #s " available: %d\n", n_##s); \
     for (int i = 0; i < n_##s; i++)                 \
         printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
+
     dictionary *d = iniparser_load("RBM.ini");
     INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
+    INIT(tenants, enabled, tenants);
+
+    n_components[0] = n_tenants,
+    n_components[1] = n_rooms,
+    n_components[2] = n_devices;
 
 #ifdef _DEBUG
     _INIT_DEBUG(devices, quantity, devices);
     _INIT_DEBUG(rooms, capacity, rooms);
+    _INIT_DEBUG(tenants, enabled, tenants);
 #endif
 
     return 0;
@@ -150,6 +160,7 @@ EXE run_cmd(int cmd, char *param, request *rq)
     }
     return RUN_SUCCESS;
 }
+
 room rooms[1000];
 device devices[1000];
 int devices_t[1000];
@@ -242,7 +253,7 @@ int main()
                 continue;
             }
             sscanf(input, "%s %[^;]", cmd, param);
-
+            strlwc(param, param, sizeof(param));
             cmd_int = cmd_to_int(cmd);
             request *rq = malloc(sizeof(request));
             // TODO: append new request into the timeline

@@ -299,4 +299,5 @@ dictionary * iniparser_load(const char * ininame);
  */
 void iniparser_freedict(dictionary * d);
 
+const char *strlwc(const char *in, char *out, unsigned len);
 #endif
