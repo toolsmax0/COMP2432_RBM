@@ -27,7 +27,7 @@ const char *TYPE[] = {
 
 #define RQ_ISLAST(arr, i) arr[i]->tenant[0] != 0
 #define RQ_ISVALID(arr, i) arr[i]->isvalid
-#define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = &src[src_i];
+#define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = src[src_i];
 
 #define N_TENANTS n_components[0]
 #define N_ROOMS n_components[1]
@@ -66,12 +66,12 @@ void print_booking(request *success[], request *fail[], char *algo)
 
     // function body begins
     // seperation queue, seperated into tenants
-    request*queue[1000][1000];
+    request*queue[1000][N_TENANTS];
     // counter to store items in the queue
-    int     counter               [1000];
+    int     counter    [N_TENANTS];
     char s_date[15], s_time[6], e_time[6];
 
-    puts(ANSI_GREEN "*** Room Booking - ACCEPTED ***");
+    printf(ANSI_GREEN "*** Room Booking - ACCEPTED / %s ***\n", algo );
     memset(counter, 0, N_TENANTS * sizeof(int));
     SEPERATE(success, queue, counter)
     printf("%d %d %d %d %d\n", counter[0], counter[1], counter[2], counter[3], counter[4]);
@@ -97,7 +97,7 @@ void print_booking(request *success[], request *fail[], char *algo)
 
     memset(counter, 0, N_TENANTS * sizeof(int));
     SEPERATE(fail, queue, counter)
-    puts(ANSI_RED "*** Room Booking - REJECTED ***");
+    printf(ANSI_RED "*** Room Booking - REJECTED / %s ***\n", algo );
     FOREACH_TENANT(
         ti,
         if (counter[ti] > 0)
@@ -129,9 +129,11 @@ void print_perform(request *success[], request *fail[], char *algo)
     int n_total = si + fi;
 
     printf( ANSI_BLUE
+        "For %s:\n"
         "\tTotal Number of Bookings Received: %-3d (%3.1f%%)\n"
         "\t      Number of Bookings Assigned: %-3d (%3.1f%%)\n"
         "\t      Number of Bookings Rejected: %-3d (%3.1f%%)\n",
+        algo,
         n_total, (float) 100,  
         n_scss, (float) n_scss/n_total*100,  
         n_fail, (float) n_fail/n_total*100
@@ -160,9 +162,9 @@ void print_perform(request *success[], request *fail[], char *algo)
         for (int j = 0; j < N_DEVICES; j++)
         {
             if (strcmp(devices[j].name, success[i]->device[0]) == 0)
-                queue_d[j][ counter_d[j]++ ] = &success[i];
+                queue_d[j][ counter_d[j]++ ] = success[i];
             if (strcmp(devices[j].name, success[i]->device[1]) == 0)
-                queue_d[j][ counter_d[j]++ ] = &success[i];
+                queue_d[j][ counter_d[j]++ ] = success[i];
         }
     }
 
