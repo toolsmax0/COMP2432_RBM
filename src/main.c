@@ -333,6 +333,13 @@ int cmp(const void *x, const void *y)
 {
     request *a = (request *)x;
     request *b = (request *)y;
+    return a->priority - b->priority;
+}
+
+int cmp2(const void *x, const void *y)
+{
+    request *a = *(request **)x;
+    request *b = *(request **)y;
     int first = strcmp(a->tenant, b->tenant);
     if (first)
         return first;
@@ -359,8 +366,12 @@ void schedule(int algo)
     int pipes[10][2][2] = {};
     int readc[10] = {}, writec[10] = {};
     char ibuf[200] = {}, obuf[200] = {};
+    request *req_p[1000];
+    for (int i = 0; requests[i].tenant[0]; i++)
+    {
+        req_p[i] = requests + i;
+    }
     int readp = 0, writep = 0;
-    qsort(requests, requestno, sizeof(request), cmp);
     if (algo == 4)
         child = 3;
     for (int i = 0; i < child; i++)
@@ -455,7 +466,7 @@ void schedule(int algo)
     else
     {
         request *success[1000] = {}, *fail[1000] = {};
-        const char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
+        char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
         char *type;
         while (read(readp, ibuf, 1))
         {
@@ -480,7 +491,7 @@ void schedule(int algo)
                 break;
             case 4:;
                 type = dict[3];
-                int num;
+                int32_t num;
                 read(readp, ibuf, sizeof(int32_t));
                 num = *(int32_t *)ibuf;
                 for (int i = 0; i < num; i++)
@@ -498,7 +509,13 @@ void schedule(int algo)
                 opti_schedule(requests, success, fail);
                 write(writep, "\1", 1);
                 break;
-            case 5:
+            case 5:;
+                int len;
+                for(len=0;success[len];len++);
+                qsort(success,len,sizeof(request*),cmp2);
+                for(len=0;fail[len];len++);
+                qsort(fail,len,sizeof(request*),cmp2);
+
                 print_booking(success, fail, type);
                 write(writep, "\1", 1);
                 break;
@@ -507,7 +524,6 @@ void schedule(int algo)
                 write(writep, "\1", 1);
                 break;
             case 7:;
-                int32_t num;
                 for (num = 0; success[num]->tenant[0]; num++)
                     ;
                 *(int32_t *)obuf = num;
