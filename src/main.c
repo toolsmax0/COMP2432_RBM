@@ -204,11 +204,10 @@ int main()
     request tmp0 = {1, "test tenant", t1, t2, 120, 5};
     request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100"};
     request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100"};
-    request test[] = {tmp0, tmp1, tmp2};
+    request *test[] = {&tmp0, &tmp1, &tmp2};
     request *success[1000];
     request *fail[1000];
     fcfs_schedule(test, success, fail);
-    prio_schedule(test, success, fail);
     opti_schedule(test, success, fail);
     return 0;
 
