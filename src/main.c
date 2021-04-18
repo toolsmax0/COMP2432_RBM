@@ -241,92 +241,54 @@ int main()
     opti_schedule(test, success, fail);
     return 0;
 
-    // points to the pipe
-    int readp, writep;
-    int pid = getpid(), cid;
-    // pipes
-    int p[4] = {};
-    int flag = 0;
-
-    //return if any one of the pipe creations fails
-    flag |= pipe(p) < 0;
-    flag |= pipe(p + 2) < 0;
-    if (flag)
-        return -1;
-
-    cid = fork();
-    if (cid < 0)
-        return -2;
-
-    // parent process
-    else if (cid > 0)
+    int cmd_int, execution;
+    char input[MAX_INPUT_LENGTH];
+    char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
+    do
     {
-        // close unneccessary pipes and assign the rest to variables for best readability.
-        close(p[0]);
-        writep = p[1];
-        readp = p[2];
-        close(p[3]);
-
-        int cmd_int, execution;
-        char input[MAX_INPUT_LENGTH];
-        char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
-        do
+        if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
         {
-            if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
+            if (!isi)
             {
-                if (!isi)
-                {
-                    puts("ERROR: No more commands to be read, exiting.");
-                    return -1;
-                }
-                fclose(IStreams[isi--]);
-                stdin = IStreams[isi];
-                continue;
+                puts("ERROR: No more commands to be read, exiting.");
+                return -1;
             }
-            sscanf(input, "%s %[^;]", cmd, param);
+            fclose(IStreams[isi--]);
+            stdin = IStreams[isi];
+            continue;
+        }
+        sscanf(input, "%s %[^;]", cmd, param);
 
-            cmd_int = cmd_to_int(cmd);
-            int newreq = 0;
-            // < 0 then error occured
-            if ((execution = run_cmd(cmd_int, param, requests + requestno, &newreq)) < RUN_EXIT)
+        cmd_int = cmd_to_int(cmd);
+        int newreq = 0;
+        // < 0 then error occured
+        if ((execution = run_cmd(cmd_int, param, requests + requestno, &newreq)) < RUN_EXIT)
+        {
+            switch (execution)
             {
-                switch (execution)
-                {
-                case RUN_ERROR_PARAM:
-                case RUN_ERROR_INVALID_CMD:
-                    // intended, two cases with same handling
-                    usage(cmd_int);
-                    break;
-                case RUN_ERROR_RUNTIME:
-                case RUN_ERROR_PARSING:
-                    puts("this is a bug");
-                    break;
+            case RUN_ERROR_PARAM:
+            case RUN_ERROR_INVALID_CMD:
+                // intended, two cases with same handling
+                usage(cmd_int);
+                break;
+            case RUN_ERROR_RUNTIME:
+            case RUN_ERROR_PARSING:
+                puts("this is a bug");
+                break;
 
-                default:
-                    puts("Error detected.");
-                    break;
-                }
+            default:
+                puts("Error detected.");
+                break;
             }
-            if (newreq)
-                requestno++;
+        }
+        if (newreq)
+            requestno++;
 #ifdef _DEBUG
-            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
+        printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
 #endif
-        } while (execution != RUN_EXIT);
+    } while (execution != RUN_EXIT);
 
-        printf("quit loop, exiting main program\n");
-    }
-
-    // child process
-    else
-    {
-        // close unneccessary pipes and assign the rest to variables for best readability.
-        readp = p[0];
-        close(p[1]);
-        close(p[2]);
-        writep = p[3];
-    }
-    return 0;
+    printf("quit loop, exiting main program\n");
 }
 
 int cmp(const void *x, const void *y)
@@ -376,12 +338,13 @@ void schedule(int algo)
         child = 3;
     for (int i = 0; i < child; i++)
     {
-        pipe(pipes[i][0]);
-        pipe(pipes[i][1]);
+        int flag = 0;
+        flag |= pipe(pipes[i][0]) < 0;
+        flag |= pipe(pipes[i][1]) < 0;
         cid = fork();
-        if (cid < 0)
+        if (cid < 0 || flag < 0)
         {
-            puts("Fatal: fork failed.");
+            puts("Fatal: fork/pipe failed.");
             for (int j = 0; j < i; j++)
             {
                 write(writec[j], "\10", 1);
@@ -511,10 +474,12 @@ void schedule(int algo)
                 break;
             case 5:;
                 int len;
-                for(len=0;success[len];len++);
-                qsort(success,len,sizeof(request*),cmp2);
-                for(len=0;fail[len];len++);
-                qsort(fail,len,sizeof(request*),cmp2);
+                for (len = 0; success[len]; len++)
+                    ;
+                qsort(success, len, sizeof(request *), cmp2);
+                for (len = 0; fail[len]; len++)
+                    ;
+                qsort(fail, len, sizeof(request *), cmp2);
 
                 print_booking(success, fail, type);
                 write(writep, "\1", 1);
