@@ -253,7 +253,7 @@ int main()
     request *fail[1000];
     fcfs_schedule(test, success, fail);
     opti_schedule(test, success, fail);
-    schedule(1);
+    schedule(4);
     return 0;
 
     int cmd_int, execution;
@@ -333,7 +333,7 @@ int cmp2(const void *x, const void *y)
  *      5:print scheduling result;
  *      6:print scheduling analysis;
  *      7:fetch preprocessed data
- *      10:exit;
+ *      8:exit;
  *  Child to Parent:
  *      1: current job finished;
  **/
@@ -370,7 +370,7 @@ void schedule(int algo)
         }
         else if (cid)
         {
-            printf("Child %d, PID %d.\n",i,cid);
+            printf("Child %d, PID %d.\n", i, cid);
             close(pipes[i][0][0]);
             writec[i] = pipes[i][0][1];
             readc[i] = pipes[i][1][0];
@@ -406,7 +406,7 @@ void schedule(int algo)
             write(writec[2], "\4", 1);
             read(readc[0], ibuf, 1);
             write(writec[0], "\5", 1);
-            read(readc[0], ibuf, 1);
+            read(readc[1], ibuf, 1);
             write(writec[1], "\5", 1);
             read(readc[1], ibuf, 1);
             write(writec[1], "\7", 1);
@@ -415,6 +415,8 @@ void schedule(int algo)
                 read(readc[1], ibuf, sizeof(int32_t));
                 int num = *(int32_t *)ibuf;
                 write(writec[2], ibuf, sizeof(int32_t));
+                if (num == -1)
+                    num = 0;
                 for (int i = 0; i < num; i++)
                 {
                     read(readc[1], ibuf, sizeof(request *));
@@ -425,7 +427,7 @@ void schedule(int algo)
             read(readc[2], ibuf, 1);
             write(writec[2], "\5", 1);
             read(readc[2], ibuf, 1);
-            puts("\n\n*** Room Booking Manager – Summary Report ***");
+            puts("\n\n\x1b[34m*** Room Booking Manager – Summary Report ***");
             puts("Performance:");
             write(writec[0], "\6", 1);
             read(readc[0], ibuf, 1);
@@ -508,19 +510,23 @@ void schedule(int algo)
                 write(writep, "\1", 1);
                 break;
             case 7:;
-                for (num = 0; success[num]->tenant[0]; num++)
+                for (num = 0; success[num]; num++)
                     ;
+                if (!num)
+                    num = -1;
                 *(int32_t *)obuf = num;
-                write(readp, obuf, sizeof(int32_t));
+                write(writep, obuf, sizeof(int32_t));
                 for (int i = 0; i < num; i++)
                 {
                     *(request **)obuf = success[i];
                     write(writep, obuf, sizeof(request *));
                 }
-                for (num = 0; fail[num]->tenant[0]; num++)
+                for (num = 0; fail[num]; num++)
                     ;
+                if (!num)
+                    num = -1;
                 *(int32_t *)obuf = num;
-                write(readp, obuf, sizeof(int32_t));
+                write(writep, obuf, sizeof(int32_t));
                 for (int i = 0; i < num; i++)
                 {
                     *(request **)obuf = fail[i];
@@ -528,7 +534,7 @@ void schedule(int algo)
                 }
                 write(writep, "\1", 1);
                 break;
-            case 10:
+            case 8:
                 close(writep);
                 close(readp);
                 exit(0);
