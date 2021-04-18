@@ -1,0 +1,84 @@
+@startuml
+title __Room Booking Manager Class Diagram__\n
+
+' skinparam BackgroundColor transparent
+
+component report {
+    file reportfile as "report.c/.h" {
+        
+    }
+}
+component timeline {
+    file timelinefile as "timeline.c/.h" {
+
+    }
+}
+
+component struct {
+    file cmd as "cmd.c/.h" {
+        
+    }
+    file cpnt as "component.c/.h" {
+
+    }
+    file request as "request.c/.h" {
+
+    }
+}
+component scheduler {
+    file fcfs.c/.h {
+
+    }
+    file opti.c/.h {
+
+    }
+    file prio.c/.h {
+
+    }
+}
+component iniparser{
+    file iniparserfile as "iniparser.c/.h" {
+
+    }
+    file dictonary as "dictionary.c/.h" {
+
+    }
+}
+file main.c {
+    class main <<(M, orchid) module>> {
+        +int n_components[]
+        +tenant tenants[]
+        +room rooms[]
+        +device devices[]
+
+        -run_cmd()
+        +init()
+        +main()
+    }
+    class ini_init <<(M, orchid) module>> {
+        -init_from_ini()
+    }
+
+    main::init -ri-> ini_init
+    ini_init::init_from_ini -ri-> main::n_components
+    ini_init::init_from_ini -ri-> main::tenants
+    ini_init::init_from_ini -ri-> main::rooms
+    ini_init::init_from_ini -ri-> main::devices
+}
+
+main --> struct
+main --> timeline
+
+main::run_cmd --> scheduler
+main::run_cmd --> report
+
+ini_init --> iniparser
+timelinefile --> request
+scheduler --> report
+
+right footer
+RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
+COMP2432 Operating Systems, Year 2020-21 Spring, The Hong Kong Polytechnic University.
+endfooter
+
+@enduml

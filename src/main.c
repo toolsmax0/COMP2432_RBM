@@ -79,9 +79,8 @@ EXE run_cmd(int cmd, char *param, request *rq)
         rq->tenant, &(s.tm_year), &(s.tm_mon), &(s.tm_mday), &(s.tm_hour), &(s.tm_min), \
         &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);                   \
     rq->isvalid = (n_param == 11);
-#define SCAN_PARAM_POSTPROCESS(rq, s, len)            \
-    s.tm_year -= 1900; s.tm_mon -= 1; s.tm_sec = 0;   \
-    rq->start = mktime(&s);                           \
+#define SCAN_PARAM_POSTPROCESS(rq, s, len)           \
+    s.tm_year -= 1900; s.tm_mon -= 1; s.tm_sec = 0;  \
     rq->start = mktime(&s);                          \
     rq->end = time_after(rq->start, len[0], len[1]); \
     rq->roomno = -1;                                 \
