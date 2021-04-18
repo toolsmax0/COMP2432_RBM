@@ -328,10 +328,11 @@ void schedule(int algo)
     int pipes[10][2][2] = {};
     int readc[10] = {}, writec[10] = {};
     char ibuf[200] = {}, obuf[200] = {};
-    request *req_p[1000];
-    for (int i = 0; requests[i].tenant[0]; i++)
+    request *req_p[10000];
+    int req_len;
+    for (req_len = 0; requests[req_len].tenant[0]; req_len++)
     {
-        req_p[i] = requests + i;
+        req_p[req_len] = requests + req_len;
     }
     int readp = 0, writep = 0;
     if (algo == 4)
@@ -428,7 +429,7 @@ void schedule(int algo)
     }
     else
     {
-        request *success[1000] = {}, *fail[1000] = {};
+        request *success[10000] = {}, *fail[01000] = {};
         char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
         char *type;
         while (read(readp, ibuf, 1))
@@ -438,17 +439,19 @@ void schedule(int algo)
             {
             case 1:
                 type = dict[1];
-                fcfs_schedule(requests, success, fail);
+                fcfs_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
             case 2:
                 type = dict[2];
-                prio_schedule(requests, success, fail);
+                qsort(req_p, req_len, sizeof(request *), cmp);
+                fcfs_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
             case 3:
                 type = dict[3];
-                prio_schedule(requests, success, fail);
+                qsort(req_p, req_len, sizeof(request *), cmp);
+                fcfs_schedule(req_p, success, fail);
                 opti_schedule(requests, success, fail);
                 write(writep, "\1", 1);
                 break;
