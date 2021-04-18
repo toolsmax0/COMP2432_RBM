@@ -36,7 +36,7 @@ typedef enum _line_status_ {
   This function convert a string into lowercase.
   At most len - 1 elements of the input string will be converted.
  */
-static const char * strlwc(const char * in, char *out, unsigned len)
+const char * strlwc(const char * in, char *out, unsigned len)
 {
     unsigned i ;
 

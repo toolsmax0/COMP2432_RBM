@@ -5,6 +5,11 @@
 #include <stdlib.h>
 
 #define _DEBUG
+
+// collection of num_tenants, num_rooms, num_devices
+int n_components[3];
+tenant tenants[1000];
+
 room rooms[1000];
 device devices[1000];
 int devices_t[1000];
@@ -16,10 +21,11 @@ int isi = 0;
 time_t genesis;
 time_t eternity;
 int requestno;
+
+void schedule(int);
 /**
  * @brief initiate all available devices from RBM.ini
  */
-void schedule(int);
 int init_from_ini()
 {
 #define INIT(val, f, s)                                 \
@@ -35,13 +41,20 @@ int init_from_ini()
     printf("No. of " #s " available: %d\n", n_##s); \
     for (int i = 0; i < n_##s; i++)                 \
         printf("  %d: %s @%d\n", i, val[i].name, val[i].f);
+
     dictionary *d = iniparser_load("RBM.ini");
     INIT(devices, quantity, devices);
     INIT(rooms, capacity, rooms);
+    INIT(tenants, enabled, tenants);
+
+    n_components[0] = n_tenants,
+    n_components[1] = n_rooms,
+    n_components[2] = n_devices;
 
 #ifdef _DEBUG
     _INIT_DEBUG(devices, quantity, devices);
     _INIT_DEBUG(rooms, capacity, rooms);
+    _INIT_DEBUG(tenants, enabled, tenants);
 #endif
 
     return 0;
@@ -73,6 +86,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
     s.tm_year -= 1900;                               \
     s.tm_mon -= 1;                                   \
     s.tm_sec = 0;                                    \
+    rq->start = mktime(&s);                          \
     rq->start = mktime(&s);                          \
     rq->end = time_after(rq->start, len[0], len[1]); \
     rq->roomno = -1;                                 \
@@ -135,7 +149,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         puts("executing bookDevice");
         break;
 
-    case addBatch:
+    case addBatch:;
         if (isi >= 99)
         {
             puts("ERROR:You have opened too many batch files, exiting. Is their a recursive reference?");
@@ -150,7 +164,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         if (f == NULL)
         {
             printf("Failed to open %s.\n", filename);
-            break;
+            return RUN_ERROR_PARAM;
         }
         IStreams[++isi] = f;
         stdin = f;
@@ -189,6 +203,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         }
         schedule(type);
         break;
+
 
     case endProgram:
         return RUN_EXIT;
@@ -233,11 +248,10 @@ int main()
     request tmp0 = {1, "test tenant", t1, t2, 120, 5};
     request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100"};
     request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100"};
-    request test[] = {tmp0, tmp1, tmp2};
+    request *test[] = {&tmp0, &tmp1, &tmp2};
     request *success[1000];
     request *fail[1000];
     fcfs_schedule(test, success, fail);
-    prio_schedule(test, success, fail);
     opti_schedule(test, success, fail);
     return 0;
 
@@ -284,7 +298,7 @@ int main()
         if (newreq)
             requestno++;
 #ifdef _DEBUG
-        printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
+            printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
 #endif
     } while (execution != RUN_EXIT);
 
@@ -452,7 +466,7 @@ void schedule(int algo)
                 type = dict[3];
                 qsort(req_p, req_len, sizeof(request *), cmp);
                 fcfs_schedule(req_p, success, fail);
-                opti_schedule(requests, success, fail);
+                opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
             case 4:;
@@ -472,7 +486,7 @@ void schedule(int algo)
                     read(readp, ibuf, sizeof(request *));
                     fail[i] = *(request **)ibuf;
                 }
-                opti_schedule(requests, success, fail);
+                opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
             case 5:;

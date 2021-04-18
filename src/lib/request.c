@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-// #define _REQ_DEBUG
-
 #define DATE_DEST(rq) &(rq->start.tm_year), &(rq->start.tm_mon), &(rq->start.tm_mday), &(rq->start.tm_hour), &(rq->start.tm_min)
 #define DEVICE_PAIRING(val)                                                                               \
     (strncmp(val->device[0], "webcam_", 7) == 0 && strncmp(val->device[1], "monitor_", 7) == 0) ||        \
@@ -46,26 +44,10 @@ char check_valid(request *r)
         return 0;
     if (r->people < 0)
         return 0;
-    if (r->device[0][0] != 0 || r->people == 0)
+    if (r->device[0][0] != 0)
     {
         if (search(r->device[0]) < 0 || search(r->device[1]) < 0)
             return 0;
     }
     return 1;
 }
-
-#ifdef _REQ_DEBUG
-// simulates parameter parsing
-int main()
-{
-    char param[128];
-    request *rq = malloc(sizeof(request));
-
-    parse_request(addMeeting, "-tenant_A 2021-4-1 1:11 1.30 10", rq);
-    parse_request(addPresentation, "-tenant_B 2021-4-1 1:11 1.30 10 device1 device2", rq);
-    parse_request(addConference, "-tenant_C 2021-4-1 1:11 1.30 10 device1 device2", rq);
-    parse_request(bookDevice, "-tenant_D 2021-4-1 1:11 1.30 device1", rq);
-    parse_request(addBatch, "-xxxx", rq);
-    parse_request(printBookings, "-fcfs", rq);
-}
-#endif

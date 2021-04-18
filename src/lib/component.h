@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include "timeline.h"
 
+
 typedef struct {
+    char name[40];
+    int enabled; // 0 if disabled, 1 if enabled
+} tenant;
+
+typedef struct
+{
     char name[40];
     int capacity;
     node *timeline;
