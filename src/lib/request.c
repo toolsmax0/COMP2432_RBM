@@ -44,7 +44,7 @@ char check_valid(request *r)
         return 0;
     if (r->people < 0)
         return 0;
-    if (r->device[0][0] != 0 || r->people == 0)
+    if (r->device[0][0] != 0)
     {
         if (search(r->device[0]) < 0 || search(r->device[1]) < 0)
             return 0;

@@ -1,5 +1,4 @@
 #pragma once
-#define _REPORT_DEBUG_ALONE
 
 #include "request.h"
 
@@ -9,7 +8,7 @@
  * @param   success list of successful requests
  * @param   fail list of failed requests
  */
-void print_booking(request *success[], request *fail[], char *algo);
+void print_booking(request success[], request fail[]);
 
 
 /**
@@ -18,4 +17,4 @@ void print_booking(request *success[], request *fail[], char *algo);
  * @param   success list of successful requests
  * @param   fail list of failed requests
  */
-void print_perform(request *success[], request *fail[], char *algo);
+void print_perform(request success[], request fail[]);
