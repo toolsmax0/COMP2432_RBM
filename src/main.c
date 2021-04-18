@@ -10,9 +10,22 @@
 int n_components[3];
 tenant tenants[1000];
 
+room rooms[1000];
+device devices[1000];
+int devices_t[1000];
+int home[1000];
+const int PRIME = 997;
+request requests[10000];
+FILE *IStreams[100];
+int isi = 0;
+time_t genesis;
+time_t eternity;
+int requestno;
+
 /**
  * @brief initiate all available devices from RBM.ini
  */
+void schedule(int);
 int init_from_ini()
 {
 #define INIT(val, f, s)                                 \
@@ -53,7 +66,7 @@ int init_from_ini()
  * @param   param   parameters for the command
  * @return  execution status in int, see enum EXE in lib/cmd.h
  */
-EXE run_cmd(int cmd, char *param, request *rq)
+EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
 {
     // printf("accepted: \"%s\", ", param);
     int n_param, duration[2];
@@ -79,11 +92,13 @@ EXE run_cmd(int cmd, char *param, request *rq)
     switch (cmd)
     {
     case addMeeting:
+        *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         // the two devices are optional
         rq->isvalid |= (n_param == 9);
         rq->priority = 2;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
+        rq->isvalid && (rq->isvalid == check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addMeeting executions
@@ -91,9 +106,11 @@ EXE run_cmd(int cmd, char *param, request *rq)
         break;
 
     case addPresentation:
+        *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 1;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
+        rq->isvalid && (rq->isvalid == check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addPresentation executions
@@ -101,9 +118,11 @@ EXE run_cmd(int cmd, char *param, request *rq)
         break;
 
     case addConference:
+        *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 0;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
+        rq->isvalid && (rq->isvalid == check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addConference executions
@@ -111,6 +130,7 @@ EXE run_cmd(int cmd, char *param, request *rq)
         break;
 
     case bookDevice:
+        *newreq = 1;
         n_param = sscanf(
             param, "-%s %d-%d-%d %d:%d %d.%d %s",
             rq->tenant, &s.tm_year, &s.tm_mon, &s.tm_mday, &s.tm_hour, &s.tm_min,
@@ -120,6 +140,7 @@ EXE run_cmd(int cmd, char *param, request *rq)
         rq->priority = 4;
         rq->people = 0;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
+        rq->isvalid && (rq->isvalid == check_valid(rq));
 
         HANDLE_PARAM_ERR
         // bookDevice executions
@@ -127,8 +148,13 @@ EXE run_cmd(int cmd, char *param, request *rq)
         break;
 
     case addBatch:
+        if (isi >= 99)
+        {
+            puts("ERROR:You have opened too many batch files, exiting. Is their a recursive reference?");
+            return -1;
+        }
         char filename[40];
-        n_param = sscanf("-%s", filename);
+        n_param = sscanf(param, "-%s", filename);
         if (n_param != 1)
             return RUN_ERROR_PARAM;
         // the above also affects the following return status RUN_ERROR_PARAM
@@ -144,11 +170,37 @@ EXE run_cmd(int cmd, char *param, request *rq)
         puts("executing addBatch");
         break;
 
-    case printBookings:
-        /* code */
-        // if param not correct,
-        return RUN_ERROR_PARAM;
-        // return RUN_SUCCESS;
+    case printBookings:;
+        char algo[20];
+        sscanf(param, "-%s", algo);
+        int type = 0;
+        switch (algo[0])
+        {
+        case 'f':
+            if (!strcmp(algo, "fcfs"))
+                return RUN_ERROR_PARAM;
+            type = 1;
+            break;
+        case 'p':
+            if (!strcmp(algo, "prio"))
+                return RUN_ERROR_PARAM;
+            type = 2;
+            break;
+        case 'o':
+            if (!strcmp(algo, "opti"))
+                return RUN_ERROR_PARAM;
+            type = 3;
+            break;
+        case 'A':
+            if (!strcmp(algo, "ALL"))
+                return RUN_ERROR_PARAM;
+            type = 4;
+            break;
+        default:
+            return RUN_ERROR_PARAM;
+        }
+        schedule(type);
+        break;
 
     case endProgram:
         return RUN_EXIT;
@@ -160,15 +212,6 @@ EXE run_cmd(int cmd, char *param, request *rq)
     }
     return RUN_SUCCESS;
 }
-
-room rooms[1000];
-device devices[1000];
-int devices_t[1000];
-int home[1000];
-const int PRIME = 997;
-request requests[10000];
-FILE *IStreams[100];
-int isi = 0;
 
 void init()
 {
@@ -230,7 +273,6 @@ int main()
     // parent process
     else if (cid > 0)
     {
-        request *req = requests;
         // close unneccessary pipes and assign the rest to variables for best readability.
         close(p[0]);
         writep = p[1];
@@ -244,7 +286,8 @@ int main()
         {
             if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
             {
-                if(!isi){
+                if (!isi)
+                {
                     puts("ERROR: No more commands to be read, exiting.");
                     return -1;
                 }
@@ -255,10 +298,9 @@ int main()
             sscanf(input, "%s %[^;]", cmd, param);
             strlwc(param, param, sizeof(param));
             cmd_int = cmd_to_int(cmd);
-            request *rq = malloc(sizeof(request));
-            // TODO: append new request into the timeline
+            int newreq = 0;
             // < 0 then error occured
-            if ((execution = run_cmd(cmd_int, param, req)) < RUN_EXIT)
+            if ((execution = run_cmd(cmd_int, param, requests + requestno, &newreq)) < RUN_EXIT)
             {
                 switch (execution)
                 {
@@ -277,6 +319,8 @@ int main()
                     break;
                 }
             }
+            if (newreq)
+                requestno++;
 #ifdef _DEBUG
             printf("----DEBUG: cmd @%d, cmd|parm @%s|%s, execution @%d\n", cmd_int, cmd, param, execution);
 #endif
@@ -295,4 +339,212 @@ int main()
         writep = p[3];
     }
     return 0;
+}
+
+int cmp(const void *x, const void *y)
+{
+    request *a = (request *)x;
+    request *b = (request *)y;
+    int first = strcmp(a->tenant, b->tenant);
+    if (first)
+        return first;
+    return cmp_time(a->start, b->start);
+}
+
+/**
+ * Inter-Process signal:
+ *  Parent to Child:
+ *      1:fcfs scheduling;
+ *      2:prio scheduling;
+ *      3:opti scheduling;
+ *      4:opti scheduling with preprocessed data;
+ *      5:print scheduling result;
+ *      6:print scheduling analysis;
+ *      7:fetch preprocessed data
+ *      10:exit;
+ *  Child to Parent:
+ *      1: current job finished;
+ **/
+void schedule(int algo)
+{
+    int cid = 0, child = 1;
+    int pipes[10][2][2] = {};
+    int readc[10] = {}, writec[10] = {};
+    char ibuf[200] = {}, obuf[200] = {};
+    int readp = 0, writep = 0;
+    qsort(requests, requestno, sizeof(request), cmp);
+    if (algo == 4)
+        child = 3;
+    for (int i = 0; i < child; i++)
+    {
+        pipe(pipes[i][0]);
+        pipe(pipes[i][1]);
+        cid = fork();
+        if (cid < 0)
+        {
+            puts("Fatal: fork failed.");
+            for (int j = 0; j < i; j++)
+            {
+                write(writec[j], "\10", 1);
+                wait(0);
+            }
+            return;
+        }
+        else if (cid)
+        {
+            close(pipes[i][0][0]);
+            writec[i] = pipes[i][0][1];
+            readc[i] = pipes[i][1][0];
+            close(pipes[i][1][1]);
+        }
+        else
+        {
+            readp = pipes[i][0][0];
+            close(pipes[i][0][1]);
+            close(pipes[i][1][0]);
+            writep = pipes[i][1][1];
+            break;
+        }
+    }
+    if (cid)
+    {
+        switch (algo)
+        {
+        case 1:
+        case 2:
+        case 3:
+            obuf[0] = (char)algo;
+            obuf[1] = '\5';
+            obuf[2] = '\10';
+            write(writec[0], obuf, 3);
+            wait(0);
+            close(writec[0]);
+            close(readc[0]);
+            break;
+        case 4:
+            write(writec[0], "\1", 1);
+            write(writec[1], "\2", 1);
+            write(writec[2], "\4", 1);
+            read(readc[0], ibuf, 1);
+            write(writec[0], "\5", 1);
+            read(readc[0], ibuf, 1);
+            write(writec[1], "\5", 1);
+            read(readc[1], ibuf, 1);
+            write(writec[1], "\7", 1);
+            for (int j = 0; j < 2; j++)
+            {
+                read(readc[1], ibuf, sizeof(int32_t));
+                int num = *(int32_t *)ibuf;
+                write(writec[2], ibuf, sizeof(int32_t));
+                for (int i = 0; i < num; i++)
+                {
+                    read(readc[1], ibuf, sizeof(request *));
+                    write(writec[2], ibuf, sizeof(request *));
+                }
+            }
+            read(readc[1], ibuf, 1);
+            read(readc[2], ibuf, 1);
+            write(writec[2], "\5", 1);
+            read(readc[2], ibuf, 1);
+            puts("\n\n*** Room Booking Manager – Summary Report ***");
+            puts("Performance:");
+            write(writec[0], "\6", 1);
+            read(readc[0], ibuf, 1);
+            write(writec[1], "\6", 1);
+            read(readc[1], ibuf, 1);
+            write(writec[2], "\6", 1);
+            read(readc[2], ibuf, 1);
+            for (int i = 0; i < 3; i++)
+            {
+                write(writec[i], "\10", 1);
+                wait(0);
+                close(writec[0]);
+                close(readc[0]);
+            }
+            break;
+        }
+    }
+    else
+    {
+        request *success[1000] = {}, *fail[1000] = {};
+        const char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
+        char *type;
+        while (read(readp, ibuf, 1))
+        {
+            char c = ibuf[0];
+            switch (c)
+            {
+            case 1:
+                type = dict[1];
+                fcfs_schedule(requests, success, fail);
+                write(writep, "\1", 1);
+                break;
+            case 2:
+                type = dict[2];
+                prio_schedule(requests, success, fail);
+                write(writep, "\1", 1);
+                break;
+            case 3:
+                type = dict[3];
+                prio_schedule(requests, success, fail);
+                opti_schedule(requests, success, fail);
+                write(writep, "\1", 1);
+                break;
+            case 4:;
+                type = dict[3];
+                int num;
+                read(readp, ibuf, sizeof(int32_t));
+                num = *(int32_t *)ibuf;
+                for (int i = 0; i < num; i++)
+                {
+                    read(readp, ibuf, sizeof(request *));
+                    success[i] = *(request **)ibuf;
+                }
+                read(readp, ibuf, sizeof(int32_t));
+                num = *(int32_t *)ibuf;
+                for (int i = 0; i < num; i++)
+                {
+                    read(readp, ibuf, sizeof(request *));
+                    fail[i] = *(request **)ibuf;
+                }
+                opti_schedule(requests, success, fail);
+                write(writep, "\1", 1);
+                break;
+            case 5:
+                print_booking(success, fail, type);
+                write(writep, "\1", 1);
+                break;
+            case 6:
+                print_perform(success, fail, type);
+                write(writep, "\1", 1);
+                break;
+            case 7:;
+                int32_t num;
+                for (num = 0; success[num]->tenant[0]; num++)
+                    ;
+                *(int32_t *)obuf = num;
+                write(readp, obuf, sizeof(int32_t));
+                for (int i = 0; i < num; i++)
+                {
+                    *(request **)obuf = success[i];
+                    write(writep, obuf, sizeof(request *));
+                }
+                for (num = 0; fail[num]->tenant[0]; num++)
+                    ;
+                *(int32_t *)obuf = num;
+                write(readp, obuf, sizeof(int32_t));
+                for (int i = 0; i < num; i++)
+                {
+                    *(request **)obuf = fail[i];
+                    write(writep, obuf, sizeof(request *));
+                }
+                write(writep, "\1", 1);
+                break;
+            case 10:
+                close(writep);
+                close(readp);
+                exit(0);
+            }
+        }
+    }
 }
