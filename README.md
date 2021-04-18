@@ -4,7 +4,7 @@ Room Booking Manager System as the Group Project of COMP2432 in year 2020-21 spr
 
 ## Deployment
 
-To deploy the program, `cd` to the project's root directory and execute `build.sh` script 
+To deploy the program, `cd` to the project's root directory and execute `build.sh` script. The program have dependency upon `gcc` 4.0+ and Linux 3.0+.
 
 ```sh
 git clone https://github.com/toolsmax0/COMP2432_RBM.git
@@ -22,9 +22,9 @@ For further information, observe the following [directory structure](#Directory%
 
 ## Program Structure
 
-### Control Flow
+### Activity Diagram
 
-The control flow of the program is demonstrated by the following picture.
+The activity diagram of the program is demonstrated by the following picture.
 
 ![Activity Diagram](./res/svg/activity_diagram.svg)
 
