@@ -25,15 +25,15 @@ const char *TYPE[] = {
 #define ANSI_BLUE "\x1b[34m"
 #define ANSI_DEFAULT "\x1b[0m"
 
-#define RQ_ISLAST(arr, i) arr[i].tenant[0] != 0
-#define RQ_ISVALID(arr, i) arr[i].isvalid
+#define RQ_ISLAST(arr, i) arr[i]->tenant[0] != 0
+#define RQ_ISVALID(arr, i) arr[i]->isvalid
 #define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = &src[src_i];
 
 #define N_TENANTS n_components[0]
 #define N_ROOMS n_components[1]
 #define N_DEVICES n_components[2]
 
-void print_booking(request success[], request fail[])
+void print_booking(request *success[], request *fail[], char *algo)
 {
 
 // several constant values
@@ -54,7 +54,7 @@ void print_booking(request success[], request fail[])
         if (!RQ_ISVALID(src, i)) continue;                    \
         FOREACH_TENANT(                                       \
             ti,                                               \
-            if (strcmp(tenants[ti].name, src[i].tenant) == 0)      \
+            if (strcmp(tenants[ti].name, src[i]->tenant) == 0)\
             { ADD_TO_QUEUE(src, dest, counter, i, ti) break; }\
     )}
 
@@ -121,7 +121,7 @@ void print_booking(request success[], request fail[])
     puts("\n" END ANSI_DEFAULT);
 }
 
-void print_perform(request success[], request fail[])
+void print_perform(request *success[], request *fail[], char *algo)
 {
     int n_scss = 0, n_fail = 0, si = 0, fi = 0;
     for (; RQ_ISLAST(success, si); si++) if (RQ_ISVALID(success, si)) n_scss++;
@@ -145,8 +145,8 @@ void print_perform(request success[], request fail[])
     for (int i = 0; RQ_ISLAST(success, i); i++)
     {
         if (!RQ_ISVALID(success, i)) continue;
-        if (0 <= success[i].roomno < N_ROOMS)
-            queue_r[success[i].roomno][ counter_r[success[i].roomno]++ ] = &success[i];
+        if (0 <= success[i]->roomno < N_ROOMS)
+            ADD_TO_QUEUE(success, queue_r, counter_r, i, success[i]->roomno)
         else
             puts(ANSI_RED "\tERROR when printing" ANSI_BLUE);
     }
@@ -159,9 +159,9 @@ void print_perform(request success[], request fail[])
         if (!RQ_ISVALID(success, i)) continue;
         for (int j = 0; j < N_DEVICES; j++)
         {
-            if (strcmp(devices[j].name, success[i].device[0]) == 0)
+            if (strcmp(devices[j].name, success[i]->device[0]) == 0)
                 queue_d[j][ counter_d[j]++ ] = &success[i];
-            if (strcmp(devices[j].name, success[i].device[1]) == 0)
+            if (strcmp(devices[j].name, success[i]->device[1]) == 0)
                 queue_d[j][ counter_d[j]++ ] = &success[i];
         }
     }

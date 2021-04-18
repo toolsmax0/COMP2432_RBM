@@ -10,6 +10,17 @@
 int n_components[3];
 tenant tenants[1000];
 
+room rooms[1000];
+device devices[1000];
+int devices_t[1000];
+int home[1000];
+const int PRIME = 997;
+request requests[10000];
+FILE *IStreams[100];
+int isi = 0;
+time_t genesis;
+time_t eternity;
+
 /**
  * @brief initiate all available devices from RBM.ini
  */
@@ -126,7 +137,7 @@ EXE run_cmd(int cmd, char *param, request *rq)
         puts("executing bookDevice");
         break;
 
-    case addBatch:
+    case addBatch:;
         char filename[40];
         n_param = sscanf("-%s", filename);
         if (n_param != 1)
@@ -160,15 +171,6 @@ EXE run_cmd(int cmd, char *param, request *rq)
     }
     return RUN_SUCCESS;
 }
-
-room rooms[1000];
-device devices[1000];
-int devices_t[1000];
-int home[1000];
-const int PRIME = 997;
-request requests[10000];
-FILE *IStreams[100];
-int isi = 0;
 
 void init()
 {
