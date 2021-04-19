@@ -1,16 +1,13 @@
 #include "timeline.h"
+#include "request.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // initiates a timeline by setting the first & last value
 node *init_timeline()
 {
-    struct tm genesis = {0, 0, 0, 1, 0, 0};
-    struct tm eternity = {0, 0, 0, 1, 0, 130};
-    time_t t1 = mktime(&genesis);
-    time_t t2 = mktime(&eternity);
-    request tmp1 = {0, 0, t1, t1};
-    request tmp2 = {0, 0, t2, t2};
+    request tmp1 = {0, 0, genesis, genesis};
+    request tmp2 = {0, 0, eternity, eternity};
     request *r1 = malloc(sizeof(request));
     request *r2 = malloc(sizeof(request));
     *r1 = tmp1;
@@ -30,9 +27,68 @@ node *init_timeline()
  */
 void insert_node(node *newnode, node *target)
 {
+    if (newnode == NULL || target == NULL)
+    {
+        printf("insert_node(%x, %x): Invalid Arguments.\n", newnode, target);
+        return;
+    }
     node *next = target->next;
     target->next = newnode;
     newnode->prev = target;
     newnode->next = next;
     next->prev = newnode;
+}
+
+void remove_node(node *t)
+{
+    if (t == NULL)
+        return;
+    node *p = t->prev;
+    node *n = t->next;
+    p->next = n;
+    n->prev = p;
+    t = NULL;
+}
+
+node *search_request(node *begin, request *r, int direction)
+{
+    if (begin == NULL)
+        return NULL;
+    do
+    {
+        if (begin->r == r)
+            return begin;
+        if (direction >= 0)
+            begin = begin->next;
+        else
+            begin = begin->prev;
+    } while (begin != NULL);
+    return NULL;
+}
+
+node *search_time(node *begin, time_t t, int direction)
+{
+    if (direction < 0)
+        begin = begin->prev;
+    node *next = begin->next;
+    while (begin != NULL && next != NULL)
+    {
+        if (cmp_time(begin->r->end, t) < 0 && cmp_time(next->r->start, t) > 0)
+            return begin;
+        if (direction >= 0)
+            begin = begin->next, next = next->next;
+        else
+            begin = begin->prev, next = next->prev;
+    }
+    return NULL;
+}
+
+node *search_slot(node *begin, time_t start, time_t end, int direction)
+{
+    node *next = begin;
+    begin = search_time(begin, start, direction);
+    next = search_time(next, end, direction);
+    if (begin == next)
+        return begin;
+    return NULL;
 }
