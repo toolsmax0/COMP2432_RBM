@@ -18,6 +18,8 @@ To execute the program, run the following command.
 ./out/RBM
 ```
 
+To modify the component settings (i.e. tenants, rooms, devices), modify `RBM.ini` file according to its syntax. 
+
 For further information, observe the following [directory structure](#Directory%20Structure).
 
 ## Program Structure
