@@ -53,12 +53,12 @@ int allocateRoom(request *rqs, request *success[]){
 
 
 
-void fcfs_schedule(request *rqs[], request *success[], request *fail[], int n_request){
+void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
 
     int n_success=0;
     int n_fail=0;
 
-    for (int i = 1; i < n_request; i++)
+    for (int i = 0; rqs[i]!=0; i++)
     {
 
         if (rqs[i]->isvalid==0){
@@ -108,6 +108,6 @@ int main(){
     }
     
 
-    fcfs_schedule(rqsp,success,fail,3);
+    fcfs_schedule(rqsp,success,fail);
 
 }

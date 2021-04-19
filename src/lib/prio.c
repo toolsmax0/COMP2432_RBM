@@ -1,14 +1,14 @@
 #include "prio.h"
 #include "fcfs.h"
 
-void prio_schedule(request *rqs[], request *success[], request *fail[],int n_request) {
+void prio_schedule(request *rqs[], request *success[], request *fail[]) {
     int n_success=0;
     int n_fail=0;
     for (int j = 0; j < 4; j++)
     {
         if (rqs[j]->priority==j)
         {
-            for (int i = 1; i < n_request; i++)
+            for (int i = 0; rqs[i]!=0; i++)
             {
 
                 if (rqs[i]->isvalid==0){

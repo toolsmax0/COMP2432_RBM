@@ -7,7 +7,7 @@
 
 // schedule the requests using fcfs, and save the successsul requests in success[], failed requests in fail[].
 // TODO
-void fcfs_schedule(request *rqs[], request *success[], request *fail[], int n_request);
+void fcfs_schedule(request *rqs[], request *success[], request *fail[]);
 
 /**
   @brief    try to allocate a room for a request and return the result: 0 if success, 1 if fail
