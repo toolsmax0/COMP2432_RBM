@@ -5,24 +5,10 @@ title __Room Booking Manager Class Diagram__\n
 
 component report {
     file reportfile as "report.c/.h" {
-        
-    }
-}
-component timeline {
-    file timelinefile as "timeline.c/.h" {
-
-    }
-}
-
-component struct {
-    file cmd as "cmd.c/.h" {
-        
-    }
-    file cpnt as "component.c/.h" {
-
-    }
-    file request as "request.c/.h" {
-
+        class report_generator <<(M, lightskyblue) module>> {
+            +void print_booking()
+            +void print_perform()
+        }
     }
 }
 component scheduler {
@@ -36,45 +22,126 @@ component scheduler {
 
     }
 }
-component iniparser{
-    file iniparserfile as "iniparser.c/.h" {
-
+component struct {
+    file cmd as "cmd.c/.h" {
+        enum EXE {
+            RUN_ERROR_PARAM         
+            RUN_ERROR_RUNTIME       
+            RUN_ERROR_PARSING       
+            RUN_ERROR_INVALID_CMD   
+            RUN_EXIT                
+            RUN_SUCCESS
+        }
+        enum CMD {
+            addMeeting     
+            addPresentation
+            addConference  
+            bookDevice     
+            addBatch       
+            printBookings  
+            endProgram     
+        }
+        class commandparser <<(M, lightskyblue) module>> {
+            -char *SYNTAX[]
+            +CMD int_to_cmd()
+            +int cmd_to_int()
+            +void usage()
+        }
+        commandparser -down-> CMD :call
     }
-    file dictonary as "dictionary.c/.h" {
-
+    file requestc as "request.c/.h" {
+        class request <<(S, lightgray) struct>> {
+            +int priority
+            +char tenant[40]
+            +time_t start
+            +time_t end
+            +int length
+            +int people
+            +int roomno 
+            +char device[2][40]
+            +char isvalid 
+        }
+        class request_parser <<(M, lightskyblue) module>> {
+            +time_t time_after()
+            +double cmp_time()
+            +char check_valid()
+        }
     }
+    file timelinec as "timeline.c/.h" {
+        class node <<(S, lightgray) struct>> {
+            +request *r
+            +node *prev
+            +node *next
+        }
+        class timeline_modifier <<(M, lightskyblue) module>> {
+            +node* init_timeline()
+            +void insert_node()
+            +void remove_node()
+            +node* search_request()
+            +node* search_time()
+            +node* search_slot()
+        }
+    }
+    file componentc as "component.c/.h" {
+        class device <<(S, lightgray) struct>> {
+            +char name[]
+            +int quantity
+            +node **timelines
+        }
+        class tenant <<(S, lightgray) struct>> {
+            +char name[]
+            +int enabled
+        }
+        class room <<(S, lightgray) struct>> {
+            +char name[]
+            +int capacity
+            +node *timeline
+        }
+        class hashtable <<(M, lightskyblue) module>> {
+            +int hash_code()
+            +int insert()
+            +int search()
+        }
+    }
+    componentc --> timelinec
+    timelinec --> requestc
 }
-file main.c {
-    class main <<(M, orchid) module>> {
-        +int n_components[]
-        +tenant tenants[]
-        +room rooms[]
-        +device devices[]
 
-        -run_cmd()
-        +init()
-        +main()
+component iniparserlib {
+    file iniparser as "iniparser.c/.h" {
     }
-    class ini_init <<(M, orchid) module>> {
-        -init_from_ini()
+    file dictionary as "dictionary.c/.h" {
+    }
+    iniparser -down-> dictionary
+}
+component IO as "I/O" {
+    file mainc as "main.c" {
+        class main <<(M, lightskyblue) module>> {
+            -EXE run_cmd()
+            +int main()
+        }
+        class initiation <<(M, lightskyblue) module>> {
+            -void init_from_ini()
+            +void init()
+        }
+        entity database {
+            +int n_components[]
+            +tenant tenants[]
+            +room rooms[]
+            +device devices[]
+        }
+
+        initiation::init_from_ini -> database :store
     }
 
-    main::init -ri-> ini_init
-    ini_init::init_from_ini -ri-> main::n_components
-    ini_init::init_from_ini -ri-> main::tenants
-    ini_init::init_from_ini -ri-> main::rooms
-    ini_init::init_from_ini -ri-> main::devices
 }
 
-main --> struct
-main --> timeline
+IO --> struct :call
 
-main::run_cmd --> scheduler
-main::run_cmd --> report
+main::run_cmd --> scheduler :call
+main::run_cmd --> report :call
 
-ini_init --> iniparser
-timelinefile --> request
-scheduler --> report
+initiation::init_from_ini --> iniparserlib :call
 
 right footer
 RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
