@@ -7,9 +7,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-device devices[3]={{"device1",2,NULL},{"device2",2,NULL},{"device3",2,NULL}};
-room rooms[3];
-int n_rooms;
+extern device devices[];
+extern room rooms[];
 
 int countOccupiedDevice(request *success[],int n_success, char devicename[], time_t start, time_t end){
     int count=0;
@@ -29,14 +28,17 @@ int roomCmp(const void *a,const void *b){
 
 int allocateRoom(request *rqs, request *success[]){
 
-    room *sortedRooms[n_rooms];
+    room *sortedRooms[1000];
 
-    for (int i = 0; i < n_rooms; i++)
+    int n_rooms;
+    
+
+    for (int i = 0; i<n_rooms; i++)
     {
         sortedRooms[i]=&rooms[i];
     }
 
-    qsort(sortedRooms, n_rooms, sizeof(room)*n_rooms, roomCmp);
+    qsort(sortedRooms, n_rooms, sizeof(sortedRooms[0])*n_rooms, roomCmp);
 
     for (int i = 0; i < n_rooms; i++)
     {
@@ -44,7 +46,7 @@ int allocateRoom(request *rqs, request *success[]){
 
         if ((rqs->start>success[i]->start && rqs->start<success[i]->end)||(rqs->end>success[i]->start && rqs->end<success[i]->end)) continue;
 
-        rqs->roomno= (sortedRooms[i] - &rooms[0])/sizeof(room);
+        rqs->roomno= (sortedRooms[i] - &rooms[0])/sizeof(sortedRooms[0]);
         return 1;
 
     }
