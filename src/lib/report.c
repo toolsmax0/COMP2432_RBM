@@ -25,7 +25,7 @@ const char *TYPE[] = {
 #define ANSI_BLUE "\x1b[34m"
 #define ANSI_DEFAULT "\x1b[0m"
 
-#define RQ_ISLAST(arr, i) arr[i]->tenant[0] != 0
+#define RQ_ISLAST(arr, i) arr[i]!= 0
 #define RQ_ISVALID(arr, i) arr[i]->isvalid
 #define ADD_TO_QUEUE(src, queue, counter, src_i, queue_i) queue[queue_i][ counter[queue_i]++ ] = src[src_i];
 
