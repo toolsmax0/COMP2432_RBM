@@ -30,7 +30,9 @@ int allocateRoom(request *rqs, request *success[]){
 
     room *sortedRooms[1000];
 
-    int n_rooms;
+    int n_rooms=0;
+    
+    for (; n_rooms < 1000&&rooms[n_rooms].name[0]!=0; n_rooms++);
     
 
     for (int i = 0; i<n_rooms; i++)
