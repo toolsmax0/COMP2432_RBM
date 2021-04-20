@@ -45,13 +45,23 @@ int allocateRoom(request *rqs, request *success[]){
     {
         if (sortedRooms[i]->capacity<rqs->people) continue;
 
-        if ((rqs->start>success[i]->start && rqs->start<success[i]->end)||(rqs->end>success[i]->start && rqs->end<success[i]->end)) continue;
-
         int roomno;
         roomno=(sortedRooms[i] - &rooms[0])/sizeof(sortedRooms[0]);
-        rqs->roomno= roomno;
-        return 1;
 
+        int flag=0;
+        for (int j = 0; success[j]!=0; j++)
+        {
+            if (success[j]->roomno==roomno
+                &&((rqs->start>success[j]->start && rqs->start<success[j]->end)||(rqs->end>success[j]->start && rqs->end<success[j]->end))){
+                    flag=1;
+                    break;
+            } 
+        }
+        if (flag==1)
+        {
+            rqs->roomno= roomno;
+            return 1;
+        }
     }
     return 0;
 }
@@ -72,7 +82,7 @@ void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
             continue;
         }
 
-        if ((rqs[i],success)==0)
+        if (allocateRoom(rqs[i],success)==0)
         {
             fail[n_fail]=rqs[i];
             n_fail++;
