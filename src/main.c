@@ -243,18 +243,19 @@ int main()
 {
     init();
     printf("PID: %d.\n", getpid());
-    struct tm tmp = {tm_year : 2021, tm_mon : 4, tm_mday : 1};
+    struct tm tmp = {tm_year : 2021-1900, tm_mon : 4-1, tm_mday : 1};
     time_t t1 = mktime(&tmp);
     time_t t2 = time_after(t1, 2, 0);
-    request tmp0 = {1, "test tenant", t1, t2, 120, 5};
-    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100"};
-    request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100"};
+    request tmp0 = {1, "tenant_a", t1, t2, 120, 5,isvalid:1};
+    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_FHD", "screen_100",isvalid:1};
+    request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_FHD", "screen_100",isvalid:1};
     request *test[] = {&tmp0, &tmp1, &tmp2,0};
     request *success[1000]={};
     request *fail[1000]={};
     fcfs_schedule(test, success, fail);
-    opti_schedule(test, success, fail);
-    schedule(4);
+    print_booking(success,fail,"FCFS");
+    // opti_schedule(test, success, fail);
+    // schedule(4);
     return 0;
 
     int cmd_int, execution;
