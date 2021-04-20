@@ -54,7 +54,7 @@ def gen_addMeeting():
                 str(rand_p)
             ]
         )
-    return(string)
+    return(string + ";")
 def gen_addPresentation():
     '''
     syntax: addPresentation -tenant YYYY-MM-DD hh:mm n.n p d1 d2
@@ -84,7 +84,7 @@ def gen_addPresentation():
             devicepool2[rand_ifd][rand_d2]
         ]
     )
-    return string
+    return(string + ";")
 def gen_addConference():
     '''
     syntax: addConference -tenant YYYY-MM-DD hh:mm n.n p d1 d2
@@ -115,7 +115,7 @@ def gen_addConference():
             devicepool2[rand_ifd][rand_d2]
         ]
     )
-    return string
+    return(string + ";")
 def gen_bookDevice():
     '''
     syntax: bookDevice -tenant YYYY-MM-DD hh:mm n.n d1
@@ -155,7 +155,7 @@ def gen_bookDevice():
                 devicepool2[rand_d1][rand_d2],
             ]
         )
-    return string
+    return(string + ";")
 
 for i in range(100):
     print(gen_addPresentation())
