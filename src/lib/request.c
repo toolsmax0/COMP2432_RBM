@@ -46,7 +46,7 @@ char check_valid(request *r)
         return 0;
     if (r->device[0][0] != 0)
     {
-        if (search(r->device[0]) < 0 || search(r->device[1]) < 0)
+        if (search(r->device[0]) < 0 || (r->priority != 3 && search(r->device[1]) < 0))
             return 0;
     }
     return 1;
