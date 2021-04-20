@@ -1,10 +1,10 @@
-addPresentation -tenant_A 2021-05-10 15:50 0.20 10 projector_2K screen_150
-addPresentation -tenant_A 2021-05-10 17:10 0.20 10 projector_2K screen_100
-addPresentation -tenant_A 2021-05-11 20:0 0.30 10 projector_2K screen_100
-addPresentation -tenant_A 2021-05-11 23:30 1.10 10 projector_4K screen_150
-addPresentation -tenant_A 2021-05-11 23:50 1.40 10 projector_4K screen_100
-addPresentation -tenant_A 2021-05-12 12:0 1.20 10 projector_2K screen_150
-addPresentation -tenant_A 2021-05-13 21:30 1.0 10 projector_2K screen_150
+addPresentation -tenant_A 2021-05-10 15:50 0.20 10 projector_2K screen_150;
+addPresentation -tenant_A 2021-05-10 17:10 0.20 10 projector_2K screen_100;
+addPresentation -tenant_A 2021-05-11 20:0 0.30 10 projector_2K screen_100;
+addPresentation -tenant_A 2021-05-11 23:30 1.10 10 projector_4K screen_150;
+addPresentation -tenant_A 2021-05-11 23:50 1.40 10 projector_4K screen_100;
+addPresentation -tenant_A 2021-05-12 12:0 1.20 10 projector_2K screen_150;
+addPresentation -tenant_A 2021-05-13 21:30 1.0 10 projector_2K screen_150;
 addPresentation -tenant_A 2021-05-14 11:40 0.0 10 projector_2K screen_100
 addPresentation -tenant_A 2021-05-15 18:50 2.10 10 projector_4K screen_100
 addPresentation -tenant_A 2021-05-15 21:10 1.30 10 projector_2K screen_150
