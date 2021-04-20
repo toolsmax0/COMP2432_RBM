@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 extern device devices[];
 extern room rooms[];
@@ -40,7 +39,7 @@ int allocateRoom(request *rqs, request *success[]){
         sortedRooms[i]=&rooms[i];
     }
 
-    qsort(sortedRooms, n_rooms, sizeof(sortedRooms[0])*n_rooms, roomCmp);
+    qsort(sortedRooms, n_rooms, sizeof(sortedRooms[0]), roomCmp);
 
     for (int i = 0; i < n_rooms; i++)
     {
@@ -48,7 +47,9 @@ int allocateRoom(request *rqs, request *success[]){
 
         if ((rqs->start>success[i]->start && rqs->start<success[i]->end)||(rqs->end>success[i]->start && rqs->end<success[i]->end)) continue;
 
-        rqs->roomno= (sortedRooms[i] - &rooms[0])/sizeof(sortedRooms[0]);
+        int roomno;
+        roomno=(sortedRooms[i] - &rooms[0])/sizeof(sortedRooms[0]);
+        rqs->roomno= roomno;
         return 1;
 
     }
@@ -71,7 +72,7 @@ void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
             continue;
         }
 
-        if (allocateRoom(rqs[i],success)==0)
+        if ((rqs[i],success)==0)
         {
             fail[n_fail]=rqs[i];
             n_fail++;
@@ -82,6 +83,7 @@ void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
         {
             success[n_success]=rqs[i];
             n_success++;
+
         }
         else{
             if (countOccupiedDevice(success,n_success,rqs[i]->device[0],rqs[i]->start,rqs[i]->end)>=devices[search(rqs[i]->device[0])].quantity||
@@ -97,21 +99,4 @@ void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
             } 
         }
     }
-}
-
-int main(){
-
-    request* success[10];
-    request* fail[10];
-
-    request rqs[3]={{0,"t1",0,60,1,15,1,{"device1","device2"},1},{0,"t1",30,90,1,15,1,{"device1","device2"},1},{0,"t1",60,120,1,15,1,{"device1","device2"},1}};
-    request *rqsp[3];
-    for (int i = 0; i < 3; i++)
-    {
-        rqsp[i] = &rqs[i];
-    }
-    
-
-    fcfs_schedule(rqsp,success,fail);
-
 }

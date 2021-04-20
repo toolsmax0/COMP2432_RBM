@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdbool.h>
 #include "component.h"
 #include "request.h"
 
