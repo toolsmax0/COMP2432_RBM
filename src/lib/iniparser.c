@@ -42,7 +42,7 @@ const char * strlwc(const char * in, char *out, unsigned len)
 
     if (in==NULL || out == NULL || len==0) return NULL ;
     i=0 ;
-    while (in[i] != '\0' && i < len-1) {
+    while (in[i] != '\0' && i < len) {
         out[i] = (char)tolower((int)in[i]);
         i++ ;
     }

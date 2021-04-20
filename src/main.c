@@ -262,10 +262,10 @@ int main()
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
-        char st[1000]={};
-        char check[100]={};
-        fgets(st,200,stdin);
-        if (sscanf(st,"%[^;]%s", input,check) == EOF)
+        char st[1000] = {};
+        char check[100] = {};
+        fgets(st, 200, stdin);
+        if (sscanf(st, "%[^;]%s", input, check) == EOF)
         {
             if (!isi)
             {
@@ -276,11 +276,11 @@ int main()
             stdin = IStreams[isi];
             continue;
         }
-        if(*check!=';'){
+        if (*check != ';')
+        {
             puts("Syntax Error: Missing Semi-Column, Skipping.");
         }
         sscanf(input, "%s %[^;]", cmd, param);
-
         cmd_int = cmd_to_int(cmd);
         int newreq = 0;
         // < 0 then error occured
@@ -350,7 +350,7 @@ void schedule(int algo)
     int pipes[10][2][2] = {};
     int readc[10] = {}, writec[10] = {};
     char ibuf[200] = {}, obuf[200] = {};
-    request *req_p[10000]={};
+    request *req_p[10000] = {};
     int req_len;
     for (req_len = 0; requests[req_len].tenant[0]; req_len++)
     {
@@ -413,6 +413,7 @@ void schedule(int algo)
             write(writec[2], "\4", 1);
             read(readc[0], ibuf, 1);
             write(writec[0], "\5", 1);
+            read(readc[0], ibuf, 1);
             read(readc[1], ibuf, 1);
             write(writec[1], "\5", 1);
             read(readc[1], ibuf, 1);
@@ -428,6 +429,8 @@ void schedule(int algo)
                 {
                     read(readc[1], ibuf, sizeof(request *));
                     write(writec[2], ibuf, sizeof(request *));
+                    read(readc[1], ibuf, sizeof(int));
+                    write(writec[2], ibuf, sizeof(int));
                 }
             }
             read(readc[1], ibuf, 1);
@@ -489,6 +492,8 @@ void schedule(int algo)
                 {
                     read(readp, ibuf, sizeof(request *));
                     success[i] = *(request **)ibuf;
+                    read(readp, ibuf, sizeof(int));
+                    success[i]->roomno = *(int *)ibuf;
                 }
                 read(readp, ibuf, sizeof(int32_t));
                 num = *(int32_t *)ibuf;
@@ -496,6 +501,8 @@ void schedule(int algo)
                 {
                     read(readp, ibuf, sizeof(request *));
                     fail[i] = *(request **)ibuf;
+                    read(readp, ibuf, sizeof(int));
+                    fail[i]->roomno = *(int *)ibuf;
                 }
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
@@ -527,6 +534,8 @@ void schedule(int algo)
                 {
                     *(request **)obuf = success[i];
                     write(writep, obuf, sizeof(request *));
+                    *(int *)obuf = success[i]->roomno;
+                    write(writep, obuf, sizeof(int));
                 }
                 for (num = 0; fail[num]; num++)
                     ;
@@ -538,6 +547,8 @@ void schedule(int algo)
                 {
                     *(request **)obuf = fail[i];
                     write(writep, obuf, sizeof(request *));
+                    *(int *)obuf = fail[i]->roomno;
+                    write(writep, obuf, sizeof(int));
                 }
                 write(writep, "\1", 1);
                 break;
