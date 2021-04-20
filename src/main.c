@@ -262,7 +262,10 @@ int main()
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
-        if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
+        char st[1000]={};
+        char check[100]={};
+        fgets(st,200,stdin);
+        if (sscanf(st,"%[^;]%s", input,check) == EOF)
         {
             if (!isi)
             {
@@ -272,6 +275,9 @@ int main()
             fclose(IStreams[isi--]);
             stdin = IStreams[isi];
             continue;
+        }
+        if(*check!=';'){
+            puts("Syntax Error: Missing Semi-Column, Skipping.");
         }
         sscanf(input, "%s %[^;]", cmd, param);
 
