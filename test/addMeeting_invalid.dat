@@ -1,0 +1,8 @@
+addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100
+addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100
+addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75
+addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50
+addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150
+addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50
+addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50
+addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K

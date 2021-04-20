@@ -88,7 +88,6 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
     s.tm_mon -= 1;                                   \
     s.tm_sec = 0;                                    \
     rq->start = mktime(&s);                          \
-    rq->start = mktime(&s);                          \
     rq->end = time_after(rq->start, len[0], len[1]); \
     rq->roomno = -1;                                 \
     rq->length = 60 * len[0] + len[1];

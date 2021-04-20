@@ -1,9 +1,10 @@
 # COMP2432_RBM
-Room Booking Manager System for COMP2432 group project
+
+Room Booking Manager System as the Group Project of COMP2432 in year 2020-21 spring.
 
 ## Deployment
 
-To deploy this project, cd to the root project folder and execute `build.sh` script.
+To deploy the program, `cd` to the project's root directory and execute `build.sh` script. The program have dependency upon `gcc` 4.0+ and Linux 3.0+.
 
 ```sh
 git clone https://github.com/toolsmax0/COMP2432_RBM.git
@@ -11,15 +12,29 @@ cd COMP2432_RBM
 sh build.sh
 ```
 
-To execute, run the following command.
+To execute the program, run the following command.
 
 ```sh
 ./out/RBM
 ```
 
-For further information, observe the following directory structure.
+To modify the component settings (i.e. tenants, rooms, devices), modify `RBM.ini` file according to its syntax. 
 
-## Directory Structure
+For further information, observe the following [directory structure](#Directory%20Structure).
+
+## Program Structure
+
+### Activity Diagram
+
+The activity diagram of the program is demonstrated by the following picture.
+
+![Activity Diagram](./res/svg/activity_diagram.svg)
+
+![Class Diagram](./res/svg/class_diagram.svg)
+
+![Sequence Diagram](./res/svg/sequence_diagram.svg)
+
+### Directory Structure
 
 ```
 ../COMP2432_RBM
@@ -27,6 +42,8 @@ For further information, observe the following directory structure.
 ├── doc                     # documentation
 │   └── ...
 ├── out                     # out files
+│   └── ...
+├── res                     # resources
 │   └── ...
 ├── src                     # C source code
 │   ├── lib                 # submodules and libraries
@@ -41,7 +58,7 @@ For further information, observe the following directory structure.
 
 ## License
 
-This project is under [GPL-3.0 License](./LICENSE)
+This project is under [GPL-3.0 License](./LICENSE).
 
 ## Open Source Libraries
 

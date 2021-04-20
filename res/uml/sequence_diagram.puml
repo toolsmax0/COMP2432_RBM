@@ -1,0 +1,24 @@
+@startuml
+title __Room Booking Manager Sequence Diagram__\n
+actor Entrant
+
+Entrant -> Ticket : Attend Event Request
+
+activate Ticket
+Ticket -> Member : Create Member Request
+
+activate Member
+Member -> Member : Create Member
+Ticket <-- Member : Create Member Response
+deactivate Member
+
+Ticket -> Ticket : Create Ticket
+Entrant <-- Ticket : Attend Event Response
+deactivate Ticket
+
+right footer
+RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
+COMP2432 Operating Systems, Year 2020-21 Spring, The Hong Kong Polytechnic University.
+endfooter
+
+@enduml

@@ -1,0 +1,6 @@
+addBatch -addPresentation.dat;
+addBatch -addMeeting.dat;
+addBatch -bookDevice.dat;
+addBatch -addConference.dat;
+printBookings -ALL;
+endProgram;
