@@ -31,7 +31,7 @@ int insert(int i)
         {
             a[t] = i;
             home[t]=x;
-            return t;
+            return 0;
         }
         if (d(t) < ((PRIME + t - x) % PRIME))
         {
@@ -51,10 +51,10 @@ int search(char *s)
     int i = hash_code(s);
     int m = i;
     int *a = devices_t;
-    for (; a[i] > 0 && d(i) > ((PRIME + i - m) % PRIME); i = (i + 1) % PRIME)
+    for (; a[i] >= 0 && d(i) > ((PRIME + i - m) % PRIME); i = (i + 1) % PRIME)
     {
         if (!strcmp(s, n(i)->name))
-            return i;
+            return a[i];
     }
     return -1;
 }
