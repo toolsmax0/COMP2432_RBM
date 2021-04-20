@@ -254,6 +254,7 @@ int main()
     request *fail[1000]={};
     fcfs_schedule(test, success, fail);
     print_booking(success,fail,"FCFS");
+    print_perform(success,fail,"FCFS");
     // opti_schedule(test, success, fail);
     // schedule(4);
     return 0;
