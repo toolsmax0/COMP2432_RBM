@@ -179,22 +179,22 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         switch (algo[0])
         {
         case 'f':
-            if (!strcmp(algo, "fcfs"))
+            if (strcmp(algo, "fcfs"))
                 return RUN_ERROR_PARAM;
             type = 1;
             break;
         case 'p':
-            if (!strcmp(algo, "prio"))
+            if (strcmp(algo, "prio"))
                 return RUN_ERROR_PARAM;
             type = 2;
             break;
         case 'o':
-            if (!strcmp(algo, "opti"))
+            if (strcmp(algo, "opti"))
                 return RUN_ERROR_PARAM;
             type = 3;
             break;
         case 'A':
-            if (!strcmp(algo, "ALL"))
+            if (strcmp(algo, "ALL\0"))
                 return RUN_ERROR_PARAM;
             type = 4;
             break;
