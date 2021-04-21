@@ -306,8 +306,8 @@ int main()
 
 int cmp(const void *x, const void *y)
 {
-    request *a = (request *)x;
-    request *b = (request *)y;
+    request *a = *(request **)x;
+    request *b = *(request **)y;
     return a->priority - b->priority;
 }
 
