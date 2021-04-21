@@ -1,0 +1,4 @@
+addBatch -test/addConference.dat;
+addBatch -test/addMeeting.dat;
+addBatch -test/addPresentation.dat;
+addBatch -test/bookDevice.dat;
