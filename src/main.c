@@ -24,6 +24,7 @@ time_t eternity;
 int requestno;
 
 void schedule(int);
+int openBatch(char *s);
 /**
  * @brief initiate all available devices from RBM.ini
  */
@@ -100,7 +101,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         rq->isvalid |= (n_param == 9);
         rq->priority = 2;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid && (rq->isvalid = check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addMeeting executions
@@ -112,7 +113,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 1;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid && (rq->isvalid = check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addPresentation executions
@@ -124,7 +125,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 0;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid && (rq->isvalid = check_valid(rq));
 
         HANDLE_PARAM_ERR
         // addConference executions
@@ -142,7 +143,7 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         rq->priority = 4;
         rq->people = 0;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid && (rq->isvalid = check_valid(rq));
 
         HANDLE_PARAM_ERR
         // bookDevice executions
@@ -150,26 +151,14 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         break;
 
     case addBatch:;
-        if (isi >= 99)
-        {
-            puts("ERROR:You have opened too many batch files, exiting. Is their a recursive reference?");
-            return -1;
-        }
+
         char filename[40];
         n_param = sscanf(param, "-%s", filename);
         if (n_param != 1)
             return RUN_ERROR_PARAM;
         // the above also affects the following return status RUN_ERROR_PARAM
-        FILE *f = fopen(filename, "r");
-        if (f == NULL)
-        {
-            printf("Failed to open %s.\n", filename);
-            return RUN_ERROR_PARAM;
-        }
-        IStreams[++isi] = f;
-        stdin = f;
-
         puts("executing addBatch");
+        return openBatch(filename);
         break;
 
     case printBookings:;
@@ -558,5 +547,80 @@ void schedule(int algo)
                 exit(0);
             }
         }
+    }
+}
+
+int openBatch(char *s)
+{
+    char names[100][100] = {};
+    FILE *files[100] = {};
+    int fi = 0;
+    int p[2];
+    if (pipe(p) < 0)
+    {
+        puts("Fatal : pipe failed.");
+        return RUN_ERROR_PARAM;
+    }
+    if (fork())
+    {
+        char ss[10000];
+        int n = 0;
+        int i = 0;
+        do
+        {
+            n = read(p[0], ss + i, 1000);
+            i += n;
+        } while (ss[i-1]!=-1);
+        ss[i-1]=0;
+        int ptr=0;
+        for (int i = 0; sscanf(ss+ptr, "%s%n", names[i],&n) != EOF; i++)
+        {
+            ptr+=n;
+            FILE *f = fopen(names[i], "r");
+            if (!f)
+            {
+                printf("Failed to open %s.\n", names[i]);
+                return RUN_ERROR_PARAM;
+            }
+            files[fi++] = f;
+        }
+        for (fi--; fi >= 0; fi--)
+        {
+            if (isi >= 99)
+            {
+                puts("ERROR:You have opened too many batch files, exiting. Is their a recursive reference?");
+                return -1;
+            }
+            IStreams[++isi] = files[fi];
+        }
+        stdin=IStreams[isi];
+        wait(0);
+        return RUN_SUCCESS;
+    }
+    else
+    {
+        printf("%d\n",getpid());
+        // sleep(10);
+        dup2(p[1],1);
+        char ss[1000];
+        sprintf(ss,"ls %s",s);
+        system(ss);
+        // write(p[1],ss,strlen(ss));
+        write(p[1],"\xff",1);
+        close(p[0]);
+        close(p[1]);
+        exit(0);
+        // sleep(10);
+        // char *args[10]={};
+        // char cwd[500];
+        // getcwd(cwd,500);
+        // puts(cwd);
+        // for(int i=0;i<10;i++){args[i]=malloc(600);}
+        // sprintf(args[0],"ls");
+        // sprintf(args[1],"%s/%s",cwd,s);
+        // sprintf(args[2],">");
+        // sprintf(args[3],"%d",p[1]);
+        // args[4]=0;
+        // execv("/bin/ls",args);
     }
 }
