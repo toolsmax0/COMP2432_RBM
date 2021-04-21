@@ -96,8 +96,8 @@ void fcfs_schedule(request *rqs[], request *success[], request *fail[]){
 
         }
         else{
-            if (countOccupiedDevice(success,n_success,rqs[i]->device[0],rqs[i]->start,rqs[i]->end)<devices[search(rqs[i]->device[0])].quantity&&
-            countOccupiedDevice(success,n_success,rqs[i]->device[1],rqs[i]->start,rqs[i]->end)<devices[search(rqs[i]->device[1])].quantity)
+            if (countOccupiedDevice(success,n_success,rqs[i]->device[0],rqs[i]->start,rqs[i]->end)<devices[search(rqs[i]->device[0])].quantity&&(rqs[i]->priority==3||
+            countOccupiedDevice(success,n_success,rqs[i]->device[1],rqs[i]->start,rqs[i]->end)<devices[search(rqs[i]->device[1])].quantity))
             {
                 success[n_success]=rqs[i];
                 n_success++;
