@@ -3,7 +3,7 @@ title __Room Booking Manager Class Diagram__\n
 
 skinparam BackgroundColor transparent
 
-component report {
+component report #bisque {
     file reportfile as "report.c/.h" {
         class report_generator <<(M, lightskyblue) module>> {
             +void print_booking()
@@ -11,18 +11,26 @@ component report {
         }
     }
 }
-component scheduler {
-    file fcfs.c/.h {
-
-    }
+component scheduler #implementation {
     file opti.c/.h {
-
+        class opti_scheduler <<(M, lightskyblue) module>> {
+            +void opti_schedule()
+        }
     }
     file prio.c/.h {
-
+        class prio_scheduler <<(M, lightskyblue) module>> {
+            +void prio_schedule()
+        }
     }
+    file fcfs.c/.h {
+        class fcfs_scheduler <<(M, lightskyblue) module>> {
+            +void fcfs_schedule()
+        }
+    }
+    opti_scheduler -> prio_scheduler
+    prio_scheduler -> fcfs_scheduler
 }
-component entities {
+component utilities #lightgray {
     file cmd as "cmd.c/.h" {
         enum EXE {
             RUN_ERROR_PARAM         
@@ -107,15 +115,14 @@ component entities {
     componentc --> timelinec
     timelinec --> requestc
 }
-
-component iniparserlib {
+component iniparserlib #gray {
     file iniparser as "iniparser.c/.h" {
     }
     file dictionary as "dictionary.c/.h" {
     }
     ' iniparser -down-> dictionary
 }
-component IO as "I/O" #lightcyan {
+component IO as "I/O" #application {
     file mainc as "main.c" {
         class main <<(M, lightskyblue) module>> {
             -EXE run_cmd()
@@ -134,12 +141,10 @@ component IO as "I/O" #lightcyan {
 
         initiation::init_from_ini -left-> database 
     }
-
 }
 
-
 main::run_cmd -up-> scheduler :call
-IO -down-> entities :call
+IO -down-> utilities :utilize
 main::run_cmd -up-> report :call
 
 initiation::init_from_ini -> iniparserlib :call
