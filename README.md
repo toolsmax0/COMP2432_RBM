@@ -20,7 +20,7 @@ To execute the program, run the following command.
 
 To modify the component settings (i.e. tenants, rooms, devices), modify `RBM.ini` file according to its syntax. 
 
-For further information, observe the following [directory structure](#Directory%20Structure).
+For further information, observe the following [directory structure](#directory-structure).
 
 ## Program Structure
 
@@ -44,6 +44,10 @@ The activity diagram of the program is demonstrated by the following picture.
 ├── out                     # out files
 │   └── ...
 ├── res                     # resources
+│   └── ...
+├── test                    # test batch files
+│   ├── *_invalid.dat       # invalid tests
+│   ├── *.dat               # valid tests
 │   └── ...
 ├── src                     # C source code
 │   ├── lib                 # submodules and libraries
