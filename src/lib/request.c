@@ -1,6 +1,7 @@
 #include "request.h"
 #include "cmd.h"
 #include "component.h"
+#include "iniparser.h"
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
@@ -46,7 +47,9 @@ char check_valid(request *r)
         return 0;
     if (r->device[0][0] != 0)
     {
-        if (search(r->device[0]) < 0 || search(r->device[1]) < 0)
+        strlwc(r->device[0], r->device[0], strlen(r->device[0]));
+        strlwc(r->device[1], r->device[1], strlen(r->device[1]));
+        if (search(r->device[0]) < 0 || (r->priority != 3 && search(r->device[1]) < 0))
             return 0;
     }
     return 1;

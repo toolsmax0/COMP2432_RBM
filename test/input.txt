@@ -1,6 +1,10 @@
-addBatch -addPresentation.dat;
-addBatch -addMeeting.dat;
-addBatch -bookDevice.dat;
-addBatch -addConference.dat;
+addBatch -test/addPresentation.dat;
+addBatch -test/addMeeting.dat;
+addBatch -test/bookDevice.dat;
+addBatch -test/addConference.dat;
+addBatch -test/addPresentation_invalid.dat;
+addBatch -test/addMeeting_invalid.dat;
+addBatch -test/bookDevice_invalid.dat;
+addBatch -test/addConference_invalid.dat;
 printBookings -ALL;
 endProgram;

@@ -179,22 +179,22 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         switch (algo[0])
         {
         case 'f':
-            if (!strcmp(algo, "fcfs"))
+            if (strcmp(algo, "fcfs"))
                 return RUN_ERROR_PARAM;
             type = 1;
             break;
         case 'p':
-            if (!strcmp(algo, "prio"))
+            if (strcmp(algo, "prio"))
                 return RUN_ERROR_PARAM;
             type = 2;
             break;
         case 'o':
-            if (!strcmp(algo, "opti"))
+            if (strcmp(algo, "opti"))
                 return RUN_ERROR_PARAM;
             type = 3;
             break;
         case 'A':
-            if (!strcmp(algo, "ALL"))
+            if (strcmp(algo, "ALL\0"))
                 return RUN_ERROR_PARAM;
             type = 4;
             break;
@@ -241,29 +241,31 @@ void init()
 int main()
 {
     init();
-    printf("PID: %d.\n", getpid());
-    struct tm tmp = {tm_year : 2021-1900, tm_mon : 4-1, tm_mday : 1};
-    time_t t1 = mktime(&tmp);
-    time_t t2 = time_after(t1, 2, 0);
-    
-    request tmp0 = {1, "tenant_a", t1, t2, 120, 5,isvalid:1};
-    request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_fhd", "screen_150",isvalid:1};
-    request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_fhd", "screen_150",isvalid:1};
-    request *test[] = {&tmp0, &tmp1, &tmp2,0};
-    request *success[1000]={};
-    request *fail[1000]={};
-    fcfs_schedule(test, success, fail);
-    print_booking(success,fail,"FCFS");
+    // struct tm tmp = {tm_year : 2021-1900, tm_mon : 4-1, tm_mday : 1};
+    // time_t t1 = mktime(&tmp);
+    // time_t t2 = time_after(t1, 2, 0);
+    // request tmp0 = {1, "tenant_a", t1, t2, 120, 5,isvalid:1};
+    // request tmp1 = {0, "test tenant2", t1, t2, 120, 15, 0, "webcam_fhd", "screen_150",isvalid:1};
+    // request tmp2 = {3, "device", t1, t2, 120, 0, 0, "webcam_fhd", "screen_150",isvalid:1};
+    // request *test[] = {&tmp0, &tmp1, &tmp2,0};
+    // request *success[1000]={};
+    // request *fail[1000]={};
+    // fcfs_schedule(test, success, fail);
+    // print_booking(success,fail,"FCFS");
+    // print_perform(success,fail,"FCFS");
     // opti_schedule(test, success, fail);
     // schedule(4);
-    return 0;
+    // return 0;
 
     int cmd_int, execution;
     char input[MAX_INPUT_LENGTH];
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
-        if (scanf("%[^;];%*[^\f\n\r\t\v]", input) == EOF)
+        char st[1000] = {};
+        char check[100] = {};
+        fgets(st, 200, stdin);
+        if (sscanf(st, "%[^;]%s", input, check) == EOF)
         {
             if (!isi)
             {
@@ -274,8 +276,11 @@ int main()
             stdin = IStreams[isi];
             continue;
         }
+        if (*check != ';')
+        {
+            puts("Syntax Error: Missing Semi-Column, Skipping.");
+        }
         sscanf(input, "%s %[^;]", cmd, param);
-
         cmd_int = cmd_to_int(cmd);
         int newreq = 0;
         // < 0 then error occured
@@ -345,7 +350,7 @@ void schedule(int algo)
     int pipes[10][2][2] = {};
     int readc[10] = {}, writec[10] = {};
     char ibuf[200] = {}, obuf[200] = {};
-    request *req_p[10000]={};
+    request *req_p[10000] = {};
     int req_len;
     for (req_len = 0; requests[req_len].tenant[0]; req_len++)
     {
@@ -408,6 +413,7 @@ void schedule(int algo)
             write(writec[2], "\4", 1);
             read(readc[0], ibuf, 1);
             write(writec[0], "\5", 1);
+            read(readc[0], ibuf, 1);
             read(readc[1], ibuf, 1);
             write(writec[1], "\5", 1);
             read(readc[1], ibuf, 1);
@@ -423,6 +429,8 @@ void schedule(int algo)
                 {
                     read(readc[1], ibuf, sizeof(request *));
                     write(writec[2], ibuf, sizeof(request *));
+                    read(readc[1], ibuf, sizeof(int));
+                    write(writec[2], ibuf, sizeof(int));
                 }
             }
             read(readc[1], ibuf, 1);
@@ -484,6 +492,8 @@ void schedule(int algo)
                 {
                     read(readp, ibuf, sizeof(request *));
                     success[i] = *(request **)ibuf;
+                    read(readp, ibuf, sizeof(int));
+                    success[i]->roomno = *(int *)ibuf;
                 }
                 read(readp, ibuf, sizeof(int32_t));
                 num = *(int32_t *)ibuf;
@@ -491,6 +501,8 @@ void schedule(int algo)
                 {
                     read(readp, ibuf, sizeof(request *));
                     fail[i] = *(request **)ibuf;
+                    read(readp, ibuf, sizeof(int));
+                    fail[i]->roomno = *(int *)ibuf;
                 }
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
@@ -522,6 +534,8 @@ void schedule(int algo)
                 {
                     *(request **)obuf = success[i];
                     write(writep, obuf, sizeof(request *));
+                    *(int *)obuf = success[i]->roomno;
+                    write(writep, obuf, sizeof(int));
                 }
                 for (num = 0; fail[num]; num++)
                     ;
@@ -533,6 +547,8 @@ void schedule(int algo)
                 {
                     *(request **)obuf = fail[i];
                     write(writep, obuf, sizeof(request *));
+                    *(int *)obuf = fail[i]->roomno;
+                    write(writep, obuf, sizeof(int));
                 }
                 write(writep, "\1", 1);
                 break;
