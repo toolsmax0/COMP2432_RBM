@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define _DEBUG
+// #define _DEBUG
 
 // collection of num_tenants, num_rooms, num_devices
 int n_components[3];
@@ -81,8 +81,8 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
     n_param = sscanf(                                                                   \
         param, "-%s %d-%d-%d %d:%d %d.%d %d %s %s",                                     \
         rq->tenant, &(s.tm_year), &(s.tm_mon), &(s.tm_mday), &(s.tm_hour), &(s.tm_min), \
-        &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);                   \
-    rq->isvalid = (n_param == 11);
+        &len[0], &len[1], &rq->people, rq->device[0], rq->device[1]);
+
 #define SCAN_PARAM_POSTPROCESS(rq, s, len)           \
     s.tm_year -= 1900;                               \
     s.tm_mon -= 1;                                   \
@@ -97,10 +97,10 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
     case addMeeting:
         *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
-        rq->isvalid |= (n_param == 9);
         rq->priority = 2;
+        rq->isvalid = (n_param == 11) || (n_param == 9);
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid &= check_valid(rq);
 
         HANDLE_PARAM_ERR
         // addMeeting executions
@@ -111,8 +111,9 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 1;
+        rq->isvalid = (n_param == 11);
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid &= check_valid(rq);
 
         HANDLE_PARAM_ERR
         // addPresentation executions
@@ -123,8 +124,9 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
         *newreq = 1;
         SCAN_PARAM_FOR_ADD_FUNCTIONS(rq, s, duration)
         rq->priority = 0;
+        rq->isvalid = (n_param == 11);
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid &= check_valid(rq);
 
         HANDLE_PARAM_ERR
         // addConference executions
@@ -139,10 +141,10 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
             &duration[0], &duration[1], rq->device[0]);
         rq->device[1][0] = 0;
         rq->isvalid = (n_param == 9);
-        rq->priority = 4;
+        rq->priority = 3;
         rq->people = 0;
         SCAN_PARAM_POSTPROCESS(rq, s, duration)
-        rq->isvalid && (rq->isvalid == check_valid(rq));
+        rq->isvalid &= check_valid(rq);
 
         HANDLE_PARAM_ERR
         // bookDevice executions
@@ -517,6 +519,7 @@ void schedule(int algo)
                 qsort(fail, len, sizeof(request *), cmp2);
 
                 print_booking(success, fail, type);
+                print_perform(success, fail, type);
                 write(writep, "\1", 1);
                 break;
             case 6:

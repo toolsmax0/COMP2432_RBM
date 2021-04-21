@@ -99,8 +99,7 @@ def gen_addConference():
     rand_m = random.randrange(0,59,10)      # within 60 mins
     rand_n = random.randrange(0,299,10)     # within 5 hours
     rand_p = random.randrange(10,20,5)      # 10,15,20 people
-    rand_ifd = random.randint(0,1)          # 0 gowith 1st pair
-                                            # 1 gowith 2nd pair
+    rand_ifd = 0
     rand_d1 = random.randint(0,1)
     rand_d2 = random.randint(0,1)
     string = " ".join(

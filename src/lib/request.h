@@ -5,7 +5,7 @@
 /**
  * @brief a single record of request
  * 
- * @param   priority  conference > meeting > presentation > device only
+ * @param   priority  conference > presentation > meeting > device only
  * @param   tenant    tenant name in string
  * @param   start     start time in time_t
  * @param   end       end time in time_t
@@ -16,7 +16,7 @@
  * @param   isvalid   whether it is a valid request
  */
 typedef struct {
-    int priority; // Linux style, conference 0, meeting 1, presentation 2, bookdevice 3
+    int priority; // Linux style, conference 0, presentation 1, meeting 2, bookdevice 3
     char tenant[40];
     time_t start;
     time_t end;

@@ -6,5 +6,3 @@ addBatch -test/addPresentation_invalid.dat;
 addBatch -test/addMeeting_invalid.dat;
 addBatch -test/bookDevice_invalid.dat;
 addBatch -test/addConference_invalid.dat;
-printBookings -ALL;
-endProgram;
