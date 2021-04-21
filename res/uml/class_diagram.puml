@@ -1,7 +1,7 @@
 @startuml
 title __Room Booking Manager Class Diagram__\n
 
-' skinparam BackgroundColor transparent
+skinparam BackgroundColor transparent
 
 component report {
     file reportfile as "report.c/.h" {
@@ -22,7 +22,7 @@ component scheduler {
 
     }
 }
-component struct {
+component entities {
     file cmd as "cmd.c/.h" {
         enum EXE {
             RUN_ERROR_PARAM         
@@ -48,6 +48,27 @@ component struct {
             +void usage()
         }
         commandparser -down-> CMD :call
+    }
+    file componentc as "component.c/.h" {
+        class device <<(S, lightgray) struct>> {
+            +char name[]
+            +int quantity
+            +node **timelines
+        }
+        class tenant <<(S, lightgray) struct>> {
+            +char name[]
+            +int enabled
+        }
+        class room <<(S, lightgray) struct>> {
+            +char name[]
+            +int capacity
+            +node *timeline
+        }
+        class hashtable <<(M, lightskyblue) module>> {
+            +int hash_code()
+            +int insert()
+            +int search()
+        }
     }
     file requestc as "request.c/.h" {
         class request <<(S, lightgray) struct>> {
@@ -82,27 +103,7 @@ component struct {
             +node* search_slot()
         }
     }
-    file componentc as "component.c/.h" {
-        class device <<(S, lightgray) struct>> {
-            +char name[]
-            +int quantity
-            +node **timelines
-        }
-        class tenant <<(S, lightgray) struct>> {
-            +char name[]
-            +int enabled
-        }
-        class room <<(S, lightgray) struct>> {
-            +char name[]
-            +int capacity
-            +node *timeline
-        }
-        class hashtable <<(M, lightskyblue) module>> {
-            +int hash_code()
-            +int insert()
-            +int search()
-        }
-    }
+    
     componentc --> timelinec
     timelinec --> requestc
 }
@@ -112,9 +113,9 @@ component iniparserlib {
     }
     file dictionary as "dictionary.c/.h" {
     }
-    iniparser -down-> dictionary
+    ' iniparser -down-> dictionary
 }
-component IO as "I/O" {
+component IO as "I/O" #lightcyan {
     file mainc as "main.c" {
         class main <<(M, lightskyblue) module>> {
             -EXE run_cmd()
@@ -131,17 +132,17 @@ component IO as "I/O" {
             +device devices[]
         }
 
-        initiation::init_from_ini -> database :store
+        initiation::init_from_ini -left-> database 
     }
 
 }
 
-IO --> struct :call
 
-main::run_cmd --> scheduler :call
-main::run_cmd --> report :call
+main::run_cmd -up-> scheduler :call
+IO -down-> entities :call
+main::run_cmd -up-> report :call
 
-initiation::init_from_ini --> iniparserlib :call
+initiation::init_from_ini -> iniparserlib :call
 
 right footer
 RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
