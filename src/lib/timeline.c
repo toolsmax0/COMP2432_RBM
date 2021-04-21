@@ -17,7 +17,7 @@ node *init_timeline()
     n1->r = r1, n2->r = r2;
     n1->next = n2, n2->next = 0;
     n1->prev = 0, n2->prev = n1;
-    return n1;
+    return n2;
 }
 
 /**

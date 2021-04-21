@@ -16,7 +16,7 @@ device devices[1000];
 int devices_t[1000];
 int home[1000];
 const int PRIME = 997;
-request requests[100000];
+request requests[10000];
 FILE *IStreams[100];
 int isi = 0;
 time_t genesis;
@@ -320,7 +320,12 @@ int cmp2(const void *x, const void *y)
         return first;
     return cmp_time(a->start, b->start);
 }
-
+int cmp3(const void *x, const void *y)
+{
+    request *a = *(request **)x;
+    request *b = *(request **)y;
+    return cmp_time(a->start, b->start);
+}
 /**
  * Inter-Process signal:
  *  Parent to Child:
@@ -451,6 +456,7 @@ void schedule(int algo)
         request *success[10000] = {}, *fail[10000] = {};
         char *dict[] = {"", "FCFS", "PRIO", "OPTI"};
         char *type;
+        int len;
         while (read(readp, ibuf, 1))
         {
             char c = ibuf[0];
@@ -471,6 +477,10 @@ void schedule(int algo)
                 type = dict[3];
                 qsort(req_p, req_len, sizeof(request *), cmp);
                 fcfs_schedule(req_p, success, fail);
+                for(len=0;success[len];len++);
+                qsort(success,len,sizeof(request*),cmp3);
+                for(len=0;fail[len];len++);
+                qsort(fail,len,sizeof(request*),cmp3);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
@@ -486,6 +496,7 @@ void schedule(int algo)
                     read(readp, ibuf, sizeof(int));
                     success[i]->roomno = *(int *)ibuf;
                 }
+                qsort(success,num,sizeof(request*),cmp3);
                 read(readp, ibuf, sizeof(int32_t));
                 num = *(int32_t *)ibuf;
                 for (int i = 0; i < num; i++)
@@ -495,11 +506,11 @@ void schedule(int algo)
                     read(readp, ibuf, sizeof(int));
                     fail[i]->roomno = *(int *)ibuf;
                 }
+                qsort(fail,num,sizeof(request*),cmp3);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
             case 5:;
-                int len;
                 for (len = 0; success[len]; len++)
                     ;
                 qsort(success, len, sizeof(request *), cmp2);
