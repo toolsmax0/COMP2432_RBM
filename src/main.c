@@ -519,7 +519,6 @@ void schedule(int algo)
                 qsort(fail, len, sizeof(request *), cmp2);
 
                 print_booking(success, fail, type);
-                print_perform(success, fail, type);
                 write(writep, "\1", 1);
                 break;
             case 6:
