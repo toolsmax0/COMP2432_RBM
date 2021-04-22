@@ -306,8 +306,8 @@ int main()
 
 int cmp(const void *x, const void *y)
 {
-    request *a = (request *)x;
-    request *b = (request *)y;
+    request *a = *(request **)x;
+    request *b = *(request **)y;
     return a->priority - b->priority;
 }
 
@@ -608,6 +608,8 @@ int openBatch(char *s)
             IStreams[++isi] = files[fi];
         }
         stdin=IStreams[isi];
+        close(p[0]);
+        close(p[1]);
         wait(0);
         return RUN_SUCCESS;
     }
@@ -624,17 +626,5 @@ int openBatch(char *s)
         close(p[0]);
         close(p[1]);
         exit(0);
-        // sleep(10);
-        // char *args[10]={};
-        // char cwd[500];
-        // getcwd(cwd,500);
-        // puts(cwd);
-        // for(int i=0;i<10;i++){args[i]=malloc(600);}
-        // sprintf(args[0],"ls");
-        // sprintf(args[1],"%s/%s",cwd,s);
-        // sprintf(args[2],">");
-        // sprintf(args[3],"%d",p[1]);
-        // args[4]=0;
-        // execv("/bin/ls",args);
     }
 }
