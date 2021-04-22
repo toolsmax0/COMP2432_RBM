@@ -47,7 +47,7 @@ void opti_schedule(request *rqs[],
 
     for (size_t i = 0; success[i] != 0; i++)
     {
-        insert_node(&node_room_success[i], rooms[node_room_success[i].r->roomno].timeline);
+        insert_node(node_room_success[i].prev, rooms[node_room_success[i].r->roomno].timeline);
 
         for (size_t j = 0; j < devices[search(node_dev1_success[i].r->device[0])].quantity; j++)
         {
@@ -56,7 +56,7 @@ void opti_schedule(request *rqs[],
                             node_dev1_success[i].r->end,
                             -1)     == NULL)
             {
-                insert_node(&node_dev1_success[i], devices[search(success[i]->device[0])].timelines[j]);
+                insert_node(node_dev1_success[i].prev, devices[search(success[i]->device[0])].timelines[j]);
                 break;
             }
         }
@@ -69,7 +69,7 @@ void opti_schedule(request *rqs[],
                                 node_dev1_success[i].r->end,
                                 -1)     == NULL)
                 {
-                    insert_node(&node_dev1_success[i], devices[search(success[i]->device[1])].timelines[j]);
+                    insert_node(node_dev1_success[i].prev, devices[search(success[i]->device[1])].timelines[j]);
                     break;
                 }
             }
@@ -152,14 +152,14 @@ void opti_schedule(request *rqs[],
         
         if (room_find != -1 && dev1_find != -1 && dev2_find >= 0)
         {
-            insert_node(&node_room_resch_room[i], rooms[room_find].timeline);
-            insert_node(&node_dev1_resch_room[i], devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
-            insert_node(&node_dev2_resch_room[i], devices[search(node_dev2_resch_room[i].r->device[1])].timelines[dev2_find]);
+            insert_node(node_room_resch_room[i].prev, rooms[room_find].timeline);
+            insert_node(node_dev1_resch_room[i].prev, devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
+            insert_node(node_dev2_resch_room[i].prev, devices[search(node_dev2_resch_room[i].r->device[1])].timelines[dev2_find]);
         }
         else if (room_find != -1 && dev1_find != -1 && dev2_find == -2)
         {
-            insert_node(&node_room_resch_room[i], rooms[room_find].timeline);
-            insert_node(&node_dev1_resch_room[i], devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
+            insert_node(node_room_resch_room[i].prev, rooms[room_find].timeline);
+            insert_node(node_dev1_resch_room[i].prev, devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
         }
         else
         {
@@ -247,14 +247,14 @@ void opti_schedule(request *rqs[],
         }
         if (room_find != -1 && dev1_find != -1 && dev2_find >= 0)
         {
-            insert_node(&node_room_resch_time[i], rooms[room_find].timeline);
-            insert_node(&node_dev1_resch_time[i], devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
-            insert_node(&node_dev2_resch_time[i], devices[search(node_dev2_resch_time[i].r->device[1])].timelines[dev2_find]);
+            insert_node(node_room_resch_time[i].prev, rooms[room_find].timeline);
+            insert_node(node_dev1_resch_time[i].prev, devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
+            insert_node(node_dev2_resch_time[i].prev, devices[search(node_dev2_resch_time[i].r->device[1])].timelines[dev2_find]);
         }
         else if (room_find != -1 && dev1_find != -1 && dev2_find == -2)
         {
-            insert_node(&node_room_resch_time[i], rooms[room_find].timeline);
-            insert_node(&node_dev1_resch_time[i], devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
+            insert_node(node_room_resch_time[i].prev, rooms[room_find].timeline);
+            insert_node(node_dev1_resch_time[i].prev, devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
         }
         else
         {
