@@ -87,64 +87,71 @@
         \subsection{Class Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.4]{./img/eps/class_diagram.eps}
+                \includegraphics[scale=0.4]{./img/class_diagram.eps}
                 \caption{Overall class design diagram of Room Booking Manager}
             \end{figure}
         \subsection{Sequence Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.5]{img/eps/sequence_diagram.eps}
+                \includegraphics[scale=0.5]{./img/sequence_diagram.eps}
                 \caption{Overall sequence design diagram of Room Booking Manager}
             \end{figure}
         \subsection{Activity Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.45]{img/eps/activity_diagram.eps}
+                \includegraphics[scale=0.45]{./img/activity_diagram.eps}
+                \caption{Overall activity design diagram of Room Booking Manager}
             \end{figure}
 
     \cleardoublepage
     \section{Testing Cases}
         \paragraph{}
-        This is the brief version. 
+        This is the brief version, which demonstrates the valid and invalid tests for addMeeting instruction only.
         \paragraph{}
-        Below demonstrates the valid and invalid tests for addMeeting instruction.
+        Tests for other instructions are similar and therefore not included. Syntax of other instructions varies in number of the parameters. Help message on syntax is available once an input error is detected.
         \paragraph{}
-        Tests for other instructions are similar but vary in parameters. 
-        \paragraph{}
-        Refer to appendix for full version. 
+        Refer to the appendix for the full version. 
 
         \paragraph{valid tests}
+        \paragraph{}
+        Valid syntax for addMeeting instruction should be:
         \begin{verbatim}
-            // the valid syntax is: 
-            // addMeeting –tenant YYYY-MM-DD hh:mm n.n [d1 d2]; 
-            addMeeting -tenant_A 2021-05-10 21:50 1.50 5 projector_2K screen_100;
-            addMeeting -tenant_A 2021-05-11 18:20 0.30 5;
-            addMeeting -tenant_A 2021-05-11 4:10 0.0 5;
+        addMeeting -tenant YYYY-MM-DD hh:mm n.n [d1 d2]; 
+        \end{verbatim}
+        \paragraph{}
+        Below are some samples which conforms the above syntax:
+        \begin{verbatim}
+        addMeeting -tenant_A 2021-05-10 21:50 1.50 5 projector_2K screen_100;
+        addMeeting -tenant_A 2021-05-11 18:20 0.30 5;
+        addMeeting -tenant_A 2021-05-11 4:10 0.0 5;
         \end{verbatim}
         
         
         \paragraph{invalid tests}
+        \paragraph{}
+        Invalid instructions of addMeeting are either:
+        
+        \begin{itemize}
+        \item Syntax invalid: (including command invalid, tenant invalid, date invalid, hour and minute invalid, duration invalid, number of people invalid, device invalid); or
+        \end{itemize}
+        
         \begin{verbatim}
-            // invalid instructions are either:
-            // command is invalid
-            command_invalid and parameters does not matter;
-            // tenant invalid
-            addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100;
-            // date invalid
-            addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100;
-            // hhmm invalid
-            addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
-            // duration invalid 
-            addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
-            // people invalid
-            addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
-            // device invalid
-            addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
-            // device pairing invalid 
-            addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50; 
-            // device without pairing 
-            addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K; 
+        command_invalid and parameters does not matter;
+        addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100;
+        addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100;
+        addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
+        addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
+        addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
+        addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
         \end{verbatim}
+        \begin{itemize}
+        \item Device pairing error (devices must be in pairs).
+        \end{itemize}
+        \begin{verbatim}
+        addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50; 
+        addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K; 
+        \end{verbatim}
+        
 
     \cleardoublepage
     \section{Performance analysis}
