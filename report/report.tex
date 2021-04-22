@@ -8,7 +8,7 @@
 \usepackage{ragged2e}
 \usepackage{lipsum}
 \usepackage{booktabs}
-\usepackage{verbatim}
+\usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \usepackage[a4paper,left=0.75in,right=0.75in,top=1in,bottom=1in,footskip=0.5in]{geometry}
 
@@ -115,16 +115,16 @@
         \paragraph{valid tests}
         \paragraph{}
         Valid syntax for addMeeting instruction should be:
-        \begin{verbatim}
-        addMeeting -tenant YYYY-MM-DD hh:mm n.n [d1 d2]; 
-        \end{verbatim}
+        \begin{Verbatim}[gobble=8]
+            addMeeting -tenant YYYY-MM-DD hh:mm n.n [d1 d2]; 
+        \end{Verbatim}
         \paragraph{}
         Below are some samples which conforms the above syntax:
-        \begin{verbatim}
-        addMeeting -tenant_A 2021-05-10 21:50 1.50 5 projector_2K screen_100;
-        addMeeting -tenant_A 2021-05-11 18:20 0.30 5;
-        addMeeting -tenant_A 2021-05-11 4:10 0.0 5;
-        \end{verbatim}
+        \begin{Verbatim}[gobble=8]
+            addMeeting -tenant_A 2021-05-10 21:50 1.50 5 projector_2K screen_100;
+            addMeeting -tenant_A 2021-05-11 18:20 0.30 5;
+            addMeeting -tenant_A 2021-05-11 4:10 0.0 5;
+        \end{Verbatim}
         
         
         \paragraph{invalid tests}
@@ -135,22 +135,22 @@
         \item Syntax invalid: (including command invalid, tenant invalid, date invalid, hour and minute invalid, duration invalid, number of people invalid, device invalid); or
         \end{itemize}
         
-        \begin{verbatim}
-        command_invalid and parameters does not matter;
-        addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100;
-        addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100;
-        addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
-        addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
-        addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
-        addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
-        \end{verbatim}
+        \begin{Verbatim}[gobble=8]
+            command_invalid and parameters does not matter;
+            addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100;
+            addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100;
+            addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
+            addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
+            addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
+            addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
+        \end{Verbatim}
         \begin{itemize}
         \item Device pairing error (devices must be in pairs).
         \end{itemize}
-        \begin{verbatim}
-        addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50; 
-        addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K; 
-        \end{verbatim}
+        \begin{Verbatim}[gobble=8]
+            addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50; 
+            addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K; 
+        \end{Verbatim}
         
 
     \cleardoublepage
@@ -162,18 +162,18 @@
             \paragraph{Step 0 Clone repo(optional)}
             \paragraph{}
                 Clone the repo from Github if there is no local copy.
-                \begin{verbatim}
+                \begin{Verbatim}[gobble=8]
                     git clone https://github.com/toolsmax0/COMP2432_RBM.git
-                \end{verbatim}
+                \end{Verbatim}
             \paragraph{Step 1 Compilation}
             \paragraph{}
                 \texttt{cd} to the project's root directory and execute \texttt{build.sh} script.
             \paragraph{}
                 The program have dependency upon \texttt{gcc 4.0+} and \texttt{linux 3.0+}.
-                \begin{verbatim}
+                \begin{Verbatim}[gobble=8]
                     cd COMP2432_RBM
                     sh build.sh
-                \end{verbatim}
+                \end{Verbatim}
             \paragraph{Step 2 Costomization(optional)}
             \paragraph{}
                 To modify the component settings (i.e. tenants, rooms, devices),
@@ -181,9 +181,9 @@
             \paragraph{Step 3 Execution}
             \paragraph{}
                 To execute the program, run the following command.
-                \begin{verbatim}
+                \begin{Verbatim}[gobble=8]
                     ./out/RBM
-                \end{verbatim}
+                \end{Verbatim}
 
         \subsection{Progarm Analysis}
 
