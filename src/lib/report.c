@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define _REPORT_DEBUG
+
 extern int n_components[];
 extern room rooms[];
 extern device devices[];
@@ -52,7 +54,7 @@ void print_booking(request *success[], request *fail[], char *algo)
     else printf("%s\n%" #offset "s %s\n", cur->device[0], "", cur->device[1]);
 
 #define SEPERATE(src, dest, counter)                                                  \
-    for (int i = 0; RQ_ISLAST(src, i); i++){                                          \
+    for (int i = 0; RQ_ISLAST(src, i); i++) {                                         \
         if (!RQ_ISVALID(src, i)) continue;                                            \
         for (int ti = 0; ti < MAX_TENANT; ti++) {                                     \
             if (dest[ti][0] == 0 || strcmp(dest[ti][0]->tenant, src[i]->tenant) == 0) \
@@ -116,6 +118,21 @@ void print_booking(request *success[], request *fail[], char *algo)
         }
     }
     puts("\n" END ANSI_DEFAULT);
+
+    #ifdef _REPORT_DEBUG
+    printf(ANSI_YELLOW);
+    // print out the invalid ones
+#define PRINT_INVALID_RQ(arr)                                                                                                                   \
+    for (int i = 0; RQ_ISLAST(arr, i); i++)                                                                                                     \
+    {                                                                                                                                           \
+        if (RQ_ISVALID(arr, i))                                                                                                                 \
+            continue;                                                                                                                           \
+        printf("INVALID in" #arr ": %s %d %d %s %s\n", arr[i]->tenant, arr[i]->priority, arr[i]->people, arr[i]->device[0], arr[i]->device[1]); \
+    }
+
+    PRINT_INVALID_RQ(success)
+    PRINT_INVALID_RQ(fail)
+    #endif
 }
 
 void print_perform(request *success[], request *fail[], char *algo)
