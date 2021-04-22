@@ -214,7 +214,7 @@ void init()
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
         insert(i);
-        node *timelines[devices[i].quantity];
+        node **timelines=calloc(devices[i].quantity,sizeof(node*));
         for (int j = 0; j < devices[i].quantity; j++)
             timelines[j] = init_timeline();
         devices[i].timelines = timelines;
