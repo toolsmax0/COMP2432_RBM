@@ -3,6 +3,7 @@ title __Room Booking Manager Class Diagram__\n
 
 skinparam BackgroundColor transparent
 skinparam FileBackgroundColor business
+skinparam defaultFontName Helvetica
 
 component report #bisque {
     file reportfile as "report.c/.h" {

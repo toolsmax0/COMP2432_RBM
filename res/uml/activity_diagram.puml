@@ -3,6 +3,7 @@ title __Room Booking Manager Activity Diagram__\n
 
 ' skinparam ConditionEndStyle hline
 skinparam BackgroundColor transparent
+skinparam defaultFontName Helvetica
 
 start
 repeat :read command;
@@ -28,7 +29,7 @@ repeat :read command;
 			split again
 				->endProgram;
 				:exit program;
-				stop;
+				stop
 			endsplit
 			else 
 				->no-match;
