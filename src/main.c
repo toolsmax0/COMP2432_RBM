@@ -480,7 +480,7 @@ void schedule(int algo)
                 for(len=0;success[len];len++);
                 qsort(success,len,sizeof(request*),cmp3);
                 for(len=0;fail[len];len++);
-                qsort(fail,len,sizeof(request*),cmp3);
+                qsort(fail,len,sizeof(request*),cmp);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
@@ -506,7 +506,7 @@ void schedule(int algo)
                     read(readp, ibuf, sizeof(int));
                     fail[i]->roomno = *(int *)ibuf;
                 }
-                qsort(fail,num,sizeof(request*),cmp3);
+                qsort(fail,num,sizeof(request*),cmp);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;

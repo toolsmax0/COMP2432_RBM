@@ -6,8 +6,8 @@
 // initiates a timeline by setting the first & last value
 node *init_timeline()
 {
-    request tmp1 = {0, 0, start:genesis, end:genesis};
-    request tmp2 = {0, 0, start:eternity, end:eternity};
+    request tmp1 = {0, 0, start : genesis, end : genesis};
+    request tmp2 = {0, 0, start : eternity, end : eternity};
     request *r1 = malloc(sizeof(request));
     request *r2 = malloc(sizeof(request));
     *r1 = tmp1;
@@ -91,4 +91,19 @@ node *search_slot(node *begin, time_t start, time_t end, int direction)
     if (begin == next)
         return begin;
     return NULL;
+}
+
+node *search_gap(node *begin,int min, int direction)
+{
+    if(direction < 0)
+    begin=begin->prev;
+    node *next=begin->next;
+    while(begin&&next&&cmp_time(next->r->start,time_after(begin->r->end,0,min))<0){
+        if(direction >= 0)begin = begin->next;
+        else begin=begin->prev;
+        next=begin->next;
+    }
+    if(begin == NULL||next==NULL)return NULL;
+    return begin;
+
 }
