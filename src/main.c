@@ -209,12 +209,16 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
 void init()
 {
     init_from_ini();
+    struct tm genesis_s = {0, 0, 0, 1, 0, 0};
+    struct tm eternity_s = {0, 0, 0, 1, 0, 130};
+    genesis = mktime(&genesis_s);
+    eternity = mktime(&eternity_s);
     IStreams[0] = stdin;
     memset(devices_t, -1, sizeof(devices_t));
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
         insert(i);
-        node *timelines[devices[i].quantity];
+        node **timelines=calloc(devices[i].quantity,sizeof(node*));
         for (int j = 0; j < devices[i].quantity; j++)
             timelines[j] = init_timeline();
         devices[i].timelines = timelines;
@@ -223,10 +227,6 @@ void init()
     {
         rooms[i].timeline = init_timeline();
     }
-    struct tm genesis_s = {0, 0, 0, 1, 0, 0};
-    struct tm eternity_s = {0, 0, 0, 1, 0, 130};
-    genesis = mktime(&genesis_s);
-    eternity = mktime(&eternity_s);
 }
 
 int main()
@@ -253,6 +253,7 @@ int main()
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
+        printf("RBM# ");
         char st[1000] = {};
         char check[100] = {};
         fgets(st, 200, stdin);
@@ -373,7 +374,7 @@ void schedule(int algo)
         }
         else if (cid)
         {
-            printf("Child %d, PID %d.\n", i, cid);
+            // printf("Child %d, PID %d.\n", i, cid);
             close(pipes[i][0][0]);
             writec[i] = pipes[i][0][1];
             readc[i] = pipes[i][1][0];
@@ -480,7 +481,7 @@ void schedule(int algo)
                 for(len=0;success[len];len++);
                 qsort(success,len,sizeof(request*),cmp3);
                 for(len=0;fail[len];len++);
-                qsort(fail,len,sizeof(request*),cmp3);
+                qsort(fail,len,sizeof(request*),cmp);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
@@ -506,7 +507,7 @@ void schedule(int algo)
                     read(readp, ibuf, sizeof(int));
                     fail[i]->roomno = *(int *)ibuf;
                 }
-                qsort(fail,num,sizeof(request*),cmp3);
+                qsort(fail,num,sizeof(request*),cmp);
                 opti_schedule(req_p, success, fail);
                 write(writep, "\1", 1);
                 break;
@@ -519,7 +520,6 @@ void schedule(int algo)
                 qsort(fail, len, sizeof(request *), cmp2);
 
                 print_booking(success, fail, type);
-                print_perform(success, fail, type);
                 write(writep, "\1", 1);
                 break;
             case 6:
@@ -615,7 +615,7 @@ int openBatch(char *s)
     }
     else
     {
-        printf("%d\n",getpid());
+        // printf("%d\n",getpid());
         // sleep(10);
         dup2(p[1],1);
         char ss[1000];

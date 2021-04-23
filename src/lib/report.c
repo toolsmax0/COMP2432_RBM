@@ -127,12 +127,13 @@ void print_booking(request *success[], request *fail[], char *algo)
     {                                                                                                                                           \
         if (RQ_ISVALID(arr, i))                                                                                                                 \
             continue;                                                                                                                           \
-        printf("INVALID in" #arr ": %s %d %d %s %s\n", arr[i]->tenant, arr[i]->priority, arr[i]->people, arr[i]->device[0], arr[i]->device[1]); \
+        printf("INVALID in " #arr ": %s %d %d %s %s\n", arr[i]->tenant, arr[i]->priority, arr[i]->people, arr[i]->device[0], arr[i]->device[1]); \
     }
 
     PRINT_INVALID_RQ(success)
     PRINT_INVALID_RQ(fail)
-    #endif
+    printf(ANSI_DEFAULT);
+#endif
 }
 
 void print_perform(request *success[], request *fail[], char *algo)
@@ -191,11 +192,69 @@ void print_perform(request *success[], request *fail[], char *algo)
             e = (e == -1 || e < cur->end) ? cur->end : e;           \
             book_len += cur->length;                                \
         } printf("\t      %-20s - %3.1f%%\n",                       \
-            res[di].name, book_len / ((float)(e - s)) * 60 * 100);  \
+            res[di].name, book_len *6000/difftime(e,s) );  \
     }
 
-    PRINT_UTILIZATION(queue_r, counter_r, N_ROOMS, rooms)
-    PRINT_UTILIZATION(queue_d, counter_d, N_DEVICES, devices)
+    int r_len[10000]={};
+    int d_len[10000]={};
+    time_t r_s[100000]={};
+    time_t r_e[100000]={};
+    time_t d_s[100000]={};
+    time_t d_e[100000]={};
+    for(int i=0;rooms[i].name[0];i++){
+        r_s[i]=eternity;
+        r_e[i]=genesis;
+    }
+    for(int i=0;devices[i].name[0];i++){
+        d_s[i]=eternity;
+        d_e[i]=genesis;
+    }
+    for (int i = 0; success[i]; i++)
+    {
+        request *r = success[i];
+        r_len[r->roomno] += r->length;
+        r_s[r->roomno] = r_s[r->roomno] < r->start ? r_s[r->roomno] : r->start;
+        r_e[r->roomno] = r_e[r->roomno] > r->end ? r_e[r->roomno] : r->end;
+        if (r->device[0][0])
+        {
+            int index = search(r->device[0]);
+            d_len[index] += r->length;
+            d_s[index] = d_s[index] < r->start ? d_s[index] : r->start;
+            d_e[index] = d_e[index] > r->end ? d_e[index] : r->end;
+            if (r->device[1][0])
+            {
+                index = search(r->device[1]);
+                d_len[index] += r->length;
+                d_s[index] = d_s[index] < r->start ? d_s[index] : r->start;
+                d_e[index] = d_e[index] > r->end ? d_e[index] : r->end;
+                i=i;
+            }
+        }
+    }
+    time_t t1 = eternity;
+    time_t t2 = genesis;
+    int length = 0;
+    for (int i = 0; success[i]; i++)
+    {
+        request *r = success[i];
+        if (r->roomno == 0)
+        {
+            length += r->length;
+            t1 = t1 < r->start ? t1 : r->start;
+            t2 = t1 > r->end ? t2 : r->end;
+        }
+    }
+    for (int i = 0; rooms[i].name[0]; i++)
+    {
+        printf("\t      %-20s - %3.1f%%\n", rooms[i].name, r_len[i] * 6000 / difftime(r_e[i], r_s[i]));
+    }
+    for (int i = 0; devices[i].name[0]; i++)
+    {
+        printf("\t      %-20s - %3.1f%%\n", devices[i].name, d_len[i] * 6000 / (devices[i].quantity * difftime(d_e[i], d_s[i])));
+    }
+
+    // PRINT_UTILIZATION(queue_r, counter_r, N_ROOMS, rooms)
+    // PRINT_UTILIZATION(queue_d, counter_d, N_DEVICES, devices)
 
     printf("\n\tInvalid requests(s) made: %d\n" ANSI_DEFAULT, n_total-n_scss-n_fail);
 }

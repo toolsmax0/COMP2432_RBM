@@ -10,9 +10,8 @@
 
 #define DATE_DEST(rq) &(rq->start.tm_year), &(rq->start.tm_mon), &(rq->start.tm_mday), &(rq->start.tm_hour), &(rq->start.tm_min)
 
-#define DEVICE_PAIRING(val, d1, d2)                                                                  \
-    (strncmp(val->device[0], d1, strlen(d1)) == 0 && strncmp(val->device[1], d2, strlen(d2)) == 0)   \
-        || (strncmp(val->device[1], d1, strlen(d1)) == 0 && strncmp(val->device[0], d2, strlen(d2)) == 0)
+#define DEVICE_PAIRING(val, d1, d2) \
+    (strncmp(val->device[0], d1, strlen(d1)) == 0 && strncmp(val->device[1], d2, strlen(d2)) == 0) || (strncmp(val->device[1], d1, strlen(d1)) == 0 && strncmp(val->device[0], d2, strlen(d2)) == 0)
 
 #define DEVICE_PAIRING_1(val) DEVICE_PAIRING(val, "webcam_", "monitor_")
 #define DEVICE_PAIRING_2(val) DEVICE_PAIRING(val, "projector_", "screen_")
@@ -45,6 +44,8 @@ char check_valid(request *r)
         return 0;
     // time invalid
     if (cmp_time(r->start, genesis) < 0 || cmp_time(r->end, eternity) > 0)
+        return 0;
+    if (r->length == 0)
         return 0;
     // internal err when calculating end = start + length
     if (cmp_time(r->end, time_after(r->start, 0, r->length)) != 0)

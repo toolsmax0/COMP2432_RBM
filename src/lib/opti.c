@@ -1,268 +1,281 @@
 #include "opti.h"
-#include "prio.h"
-#include "fcfs.h"
+#include "timeline.h"
+#include "request.h"
+#include <math.h>
 
-void opti_schedule(request *rqs[],
-				   request *success[],
-				   request *fail[])
+int push_slot(node **ns, int len, int begin, int length, int direction)
 {
-    size_t n_success = 0;
-    size_t n_fail = 0;
-    size_t n_device = 0;
-
-    //-1 for not found, otherwise for index
-    int room_find = -1;
-    int dev1_find = -1;
-    //-2 for no dev2
-    int dev2_find = -1;
-
-    for (size_t i = 0; success[i] != 0; i++)
+    if (begin >= 0)
     {
-        n_success++;
-    }//count accepted requests
-    
-    for (size_t i = 0; fail[i] != 0; i++)
-    {
-        n_fail++;
-    }//count rejected requests
-    
-    for (size_t i = 0; devices[i].name[0] != 0; i++)
-    {
-        n_device++;
+        if (direction >= 0)
+            ns[begin] = ns[begin]->next;
+        else
+            ns[begin] = ns[begin]->prev;
+        ns[begin] = search_gap(ns[begin], length, direction);
     }
-    //delete resch_room related if best-fit not available
-    node *node_room_success = (node*)calloc(n_success, sizeof(node));
-    node *node_dev1_success = (node*)calloc(n_success, sizeof(node));
-    node *node_dev2_success = (node*)calloc(n_success, sizeof(node));
-    memset(node_room_success, 0x00, sizeof(node) * n_success);
-    memset(node_dev1_success, 0x00, sizeof(node) * n_success);
-    memset(node_dev2_success, 0x00, sizeof(node) * n_success);//zero for only one device
-    
-	for (size_t i = 0; i < n_success; i++)
-	{
-		node_room_success[i].r = success[i];
-        node_dev1_success[i].r = success[i];
-        node_dev2_success[i].r = success[i];
-	}
-
-    for (size_t i = 0; success[i] != 0; i++)
+    int res = 0;
+    for (int i = 1; i < len; i++)
     {
-        insert_node(node_room_success[i].prev, rooms[node_room_success[i].r->roomno].timeline);
-
-        for (size_t j = 0; j < devices[search(node_dev1_success[i].r->device[0])].quantity; j++)
+        if (direction >= 0)
         {
-            if (search_slot(devices[search(node_dev1_success[i].r->device[0])].timelines[j],
-                            node_dev1_success[i].r->start,
-                            node_dev1_success[i].r->end,
-                            -1)     == NULL)
+            if (cmp_time(ns[i]->r->start, ns[res]->r->start) < 0)
             {
-                insert_node(node_dev1_success[i].prev, devices[search(success[i]->device[0])].timelines[j]);
-                break;
-            }
-        }
-        if (node_dev2_success[i].r->device[2][0] != 0)
-        {
-            for (size_t j = 0; j < devices[search(node_dev1_success[i].r->device[1])].quantity; j++)
-            {
-                if (search_slot(devices[search(success[i]->device[1])].timelines[j],
-                                node_dev1_success[i].r->start,
-                                node_dev1_success[i].r->end,
-                                -1)     == NULL)
-                {
-                    insert_node(node_dev1_success[i].prev, devices[search(success[i]->device[1])].timelines[j]);
-                    break;
-                }
-            }
-        }
-    }
-	
-    size_t n_resch_room = 0;
-
-    request *resch_room = (request*)calloc(n_fail, sizeof(request));
-    memset(resch_room, 0x00, n_fail * sizeof(request));
-
-    for (size_t i = 0; i < n_fail; i++)
-    {
-        resch_room[n_resch_room] = *fail[i];
-        n_resch_room++;
-    }
-
-    node *node_room_resch_room = (node*)calloc(n_resch_room, sizeof(node));
-    node *node_dev1_resch_room = (node*)calloc(n_resch_room, sizeof(node));
-    node *node_dev2_resch_room = (node*)calloc(n_resch_room, sizeof(node));
-    memset(node_room_resch_room, 0x00, sizeof(node) * n_resch_room);
-    memset(node_dev1_resch_room, 0x00, sizeof(node) * n_resch_room);
-    memset(node_dev2_resch_room, 0x00, sizeof(node) * n_resch_room);
-
-    for (size_t i = 0; i < n_resch_room; i++)
-    {
-        node_room_resch_room[i].r = &resch_room[i];
-        node_dev1_resch_room[i].r = &resch_room[i];
-        node_dev2_resch_room[i].r = &resch_room[i];
-    }
-    
-    size_t n_resch_time = 0;
-
-    request *resch_time = (request*)calloc(n_resch_room, sizeof(request));
-    memset(resch_time, 0x00, n_resch_room * sizeof(request));
-
-    for (size_t i = 0; i < n_resch_room; i++)
-    {
-        for (size_t j = 0; rooms[j].capacity != 0; j++)
-        {
-            if (rooms[j].capacity >= resch_room[i].people   &&
-                search_slot(rooms[j].timeline,
-                            node_room_resch_room[i].r->start,
-                            node_room_resch_room[i].r->end,
-                            -1) == NULL)
-            {
-                room_find = j;
-                break;
-            }
-        }
-        for (size_t j = 0; j < devices[search(node_dev1_resch_room[i].r->device[0])].quantity; j++)
-        {
-            if (search_slot(devices[search(node_dev1_resch_room[i].r->device[0])].timelines[j],
-                            node_dev1_resch_room[i].r->start,
-                            node_dev1_resch_room[i].r->end,
-                            -1)     == NULL)
-            {
-                dev1_find = j;
-                break;
-            }
-        }
-        if (node_dev2_resch_room[i].r->device[2][0] != 0)
-        {
-            for (size_t j = 0; j < devices[search(node_dev2_resch_room[i].r->device[1])].quantity; j++)
-            {
-                if (search_slot(devices[search(node_dev2_resch_room[i].r->device[1])].timelines[j],
-                                node_dev2_resch_room[i].r->start,
-                                node_dev2_resch_room[i].r->end,
-                                -1)     == NULL)
-                {
-                    dev2_find = j;
-                    break;
-                }
+                res = i;
             }
         }
         else
         {
-            dev2_find = -2;
+            if (cmp_time(ns[i]->r->end, ns[res]->r->end) > 0)
+            {
+                res = i;
+            }
         }
-        
-        if (room_find != -1 && dev1_find != -1 && dev2_find >= 0)
+    }
+    return res;
+}
+
+int check_newtime(node **dst, int len, int minutes, int direction, time_t *result)
+{
+    time_t start, end;
+    if (direction >= 0)
+    {
+        start = dst[0]->r->end;
+        end = dst[0]->next->r->start;
+    }
+    else
+    {
+        start = dst[0]->prev->r->end;
+        end = dst[0]->r->start;
+    }
+    int tgt = 0;
+    for (int i = 1; i < len; i++)
+    {
+        if (direction >= 0)
         {
-            insert_node(node_room_resch_room[i].prev, rooms[room_find].timeline);
-            insert_node(node_dev1_resch_room[i].prev, devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
-            insert_node(node_dev2_resch_room[i].prev, devices[search(node_dev2_resch_room[i].r->device[1])].timelines[dev2_find]);
-        }
-        else if (room_find != -1 && dev1_find != -1 && dev2_find == -2)
-        {
-            insert_node(node_room_resch_room[i].prev, rooms[room_find].timeline);
-            insert_node(node_dev1_resch_room[i].prev, devices[search(node_dev1_resch_room[i].r->device[0])].timelines[dev1_find]);
+            if (dst[i]->r->end < dst[tgt]->r->end)
+                tgt = i;
+            start = start > dst[i]->r->end ? start : dst[i]->r->end;
+            end = end < dst[i]->next->r->start ? end : dst[i]->next->r->start;
         }
         else
         {
-            resch_time[n_resch_time] = resch_room[i];
-            n_resch_time++;
+            if (dst[i]->r->start > dst[tgt]->r->start)
+                tgt = i;
+            start = start > dst[i]->prev->r->end ? start : dst[i]->prev->r->end;
+            end = end < dst[i]->r->start ? end : dst[i]->r->start;
         }
-        int room_find = -1;
-        int dev1_find = -1;
-        int dev2_find = -1;
     }
-    
-    node *node_room_resch_time = (node*)calloc(n_resch_time, sizeof(node));
-    node *node_dev1_resch_time = (node*)calloc(n_resch_time, sizeof(node));
-    node *node_dev2_resch_time = (node*)calloc(n_resch_time, sizeof(node));
-    memset(node_room_resch_time, 0x00, sizeof(node) * n_resch_time);
-    memset(node_dev1_resch_time, 0x00, sizeof(node) * n_resch_time);
-    memset(node_dev2_resch_time, 0x00, sizeof(node) * n_resch_time);
-
-    for (size_t i = 0; i < n_resch_time; i++)
+    double time = difftime(end, start);
+    if (time >= minutes * 60)
     {
-        node_room_resch_time[i].r = &resch_time[i];
-        node_dev1_resch_time[i].r = &resch_time[i];
-        node_dev2_resch_time[i].r = &resch_time[i];
+        *result = start;
+        return -1;
     }
-    
-    size_t n_real_fail = 0;
+    return tgt;
+}
 
-    request *real_fail = (request*)calloc(n_resch_time, sizeof(request));
-    memset(real_fail, 0x00, n_resch_time * sizeof(request));
-
-    for (size_t i = 0; i < n_resch_time; i++)
+time_t find_newtime(node ***nodes, int lens[], int len, node **dst, int min, int direction)
+{
+    node *ns[5][1000];
+    int dsti[5] = {};
+    memcpy(ns, nodes, sizeof(node *) * 3 * 1000);
+    for (int i = 0; i < len; i++)
     {
-        for (time_t j = genesis; j < eternity; )
+        dsti[i] = push_slot(ns[i], lens[i], -1, 0, direction);
+        dst[i] = ns[i][dsti[i]];
+    }
+    time_t result = time(0);
+    int flag = check_newtime(dst, len, min, direction, &result);
+    while (flag != -1)
+    {
+        dsti[flag] = push_slot(ns[flag], lens[flag], dsti[flag], min, direction);
+        dst[flag] = ns[flag][dsti[flag]];
+        flag = check_newtime(dst, len, min, direction, &result);
+    }
+    return result;
+}
+
+int cmp4(const void *x, const void *y)
+{
+    request *a = *(request **)x;
+    request *b = *(request **)y;
+    if (a == NULL)
+        return 1;
+    if (b == NULL)
+        return -1;
+    return 0;
+}
+
+void opti_schedule(request *rqs[], request *success[], request *fail[])
+{
+
+    int s_len = 0;
+    for (; success[s_len]; s_len++)
+    {
+        request *r = success[s_len];
+        node *n = malloc(sizeof(node));
+        n->r = r;
+        insert_node(n, rooms[r->roomno].timeline->prev);
+        if (n->next->r->start < n->r->end)
+            printf("%d", n->r->length);
+        if (r->device[0][0] == 0)
+            continue;
+        int index = search(r->device[0]);
+        n = malloc(sizeof(node));
+        n->r = r;
+        device *d = devices + index;
+        for (int i = 0; i < devices[index].quantity; i++)
         {
-            for (size_t k = 0; rooms[k].capacity != 0; k++)
+            if (cmp_time(r->start, d->timelines[i]->prev->r->end) < 0)
+                continue;
+            insert_node(n, d->timelines[i]->prev);
+            break;
+        }
+        if (r->device[1][0] == 0)
+            continue;
+        index = search(r->device[1]);
+        n = malloc(sizeof(node));
+        n->r = r;
+        d = devices + index;
+        for (int i = 0; i < devices[index].quantity; i++)
+        {
+            if (cmp_time(r->start, d->timelines[i]->prev->r->end) < 0)
+                continue;
+            insert_node(n, d->timelines[i]->prev);
+            break;
+        }
+    }
+    int f_len = 0;
+    for (; fail[f_len]; f_len++)
+    {
+        request *r = fail[f_len];
+        if (r->isvalid == 0)
+            continue;
+        node *ns[3][1000] = {};
+        int lens[5] = {};
+        int len = 0;
+        for (int i = 0; rooms[i].name[0]; i++)
+        {
+            if (rooms[i].capacity >= r->people)
             {
-                if (rooms[j].capacity >= resch_time[i].people   &&
-                    search_slot(rooms[j].timeline,
-                                j,
-                                j + node_room_resch_time[i].r->length,
-                                -1) == NULL)
+                ns[len][lens[len]] = search_time(rooms[i].timeline, r->start, -1);
+                lens[len]++;
+            }
+        }
+        if (lens[len])
+            len++;
+        if (r->device[0][0] != 0)
+        {
+            device *d = devices + search(r->device[0]);
+            for (int i = 0; i < d->quantity; i++)
+            {
+                ns[len][lens[len]] = search_time(d->timelines[i], r->start, -1);
+                lens[len]++;
+            }
+            if (lens[len])
+                len++;
+            if (r->device[1][0] != 0)
+            {
+                d = devices + search(r->device[1]);
+                for (int i = 1; i < d->quantity; i++)
                 {
-                    room_find = k;
+                    ns[len][lens[len]] = search_time(d->timelines[i], r->start, -1);
+                }
+                if (lens[len])
+                    len++;
+            }
+        }
+        node *desn[5] = {};
+        node *desp[5] = {};
+        time_t newtimens = find_newtime((node ***)ns, lens, len, desn, r->length, -1);
+        time_t newtimeps = find_newtime((node ***)ns, lens, len, desp, r->length, 1);
+        time_t newtimene = time_after(newtimens, 0, r->length);
+        time_t newtimepe = time_after(newtimeps, 0, r->length);
+        if (difftime(r->start, newtimens) <= difftime(newtimeps, r->start))
+        {
+            r->start = newtimens;
+            r->end = newtimene;
+            node *tmp = desn[0];
+            while (tmp->next)
+                tmp = tmp->next;
+            for (int i = 0; rooms[i].name[0]; i++)
+            {
+                if (rooms[i].timeline == tmp)
+                {
+                    r->roomno = i;
                     break;
                 }
             }
-            for (size_t k = 0; j < devices[search(node_dev1_resch_time[i].r->device[0])].quantity; k++)
+            for (int i = 0; i < len; i++)
             {
-                if (search_slot(devices[search(node_dev1_resch_time[i].r->device[0])].timelines[j],
-                                j,
-                                j + node_room_resch_time[i].r->length,
-                                -1) == NULL)
-                {
-                    dev1_find = k;
-                    break;
-                }
+                node *n = malloc(sizeof(node));
+                n->r = r;
+                insert_node(n, desn[i]->prev);
+                if (n->next->r->start < n->r->end)
+                    printf("%d", n->r->length);
             }
-            if (node_dev2_resch_time[i].r->device[2][0] != 0)
-            {
-                for (size_t k = 0; k < devices[search(node_dev2_resch_time[i].r->device[1])].quantity; k++)
-                {
-                    if (search_slot(devices[search(node_dev2_resch_time[i].r->device[1])].timelines[k],
-                                    j,
-                                    j + node_room_resch_time[i].r->length,
-                                    -1) == NULL)
-                    {
-                        dev2_find = k;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                dev2_find = -2;
-            }
-            if (node_dev2_resch_time[i].r->device[2][0] != 0 && room_find != -1 && dev1_find != -1 && dev2_find >= 0)
-            {
-                break;
-            }
-            else if(node_dev2_resch_time[i].r->device[2][0] == 0 && room_find != -1 && dev1_find != -1 && dev2_find == -2)
-            {
-                break;
-            }
-            j += 3600;
-        }
-        if (room_find != -1 && dev1_find != -1 && dev2_find >= 0)
-        {
-            insert_node(node_room_resch_time[i].prev, rooms[room_find].timeline);
-            insert_node(node_dev1_resch_time[i].prev, devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
-            insert_node(node_dev2_resch_time[i].prev, devices[search(node_dev2_resch_time[i].r->device[1])].timelines[dev2_find]);
-        }
-        else if (room_find != -1 && dev1_find != -1 && dev2_find == -2)
-        {
-            insert_node(node_room_resch_time[i].prev, rooms[room_find].timeline);
-            insert_node(node_dev1_resch_time[i].prev, devices[search(node_dev1_resch_time[i].r->device[0])].timelines[dev1_find]);
         }
         else
         {
-            real_fail[n_real_fail] = resch_time[i];
-            n_resch_time++;
+            r->start = newtimeps;
+            r->end = newtimepe;
+            node *tmp = desp[0];
+            while (tmp->next)
+                tmp = tmp->next;
+            for (int i = 0; rooms[i].name[0]; i++)
+            {
+                if (rooms[i].timeline == tmp)
+                {
+                    r->roomno = i;
+                    break;
+                }
+            }
+            for (int i = 0; i < len; i++)
+            {
+                node *n = malloc(sizeof(node));
+                n->r = r;
+                insert_node(n, desp[i]);
+                if (n->next->r->start < n->r->end)
+                    printf("%d", n->r->length);
+            }
         }
-        int room_find = -1;
-        int dev1_find = -1;
-        int dev2_find = -1;
+        success[s_len++] = r;
+        fail[f_len] = 0;
     }
+    qsort(fail, f_len, sizeof(request *), cmp4);
+    // node *a = rooms[0].timeline->prev;
+    // time_t t1 = a->r->end;
+    // int length = 0;
+    // while (a->prev)
+    // {
+    //     length += a->r->length;
+    //     a = a->prev;
+    // }
+    // time_t t2 = a->next->r->start;
+    // printf("%.5f ", length * 60 / difftime(t1, t2));
+    // t1 = eternity;
+    // t2 = genesis;
+    // length = 0;
+    // for (int i = 0; i < s_len; i++)
+    // {
+    //     request *r = success[i];
+    //     if (r->roomno == 0)
+    //     {
+    //         length += r->length;
+    //         t1 = t1 < r->start ? t1 : r->start;
+    //         t2 = t1 > r->end ? t2 : r->end;
+    //     }
+    // }
+    // printf("%.5f\n", length * 60 / difftime(t2, t1));
+    // printf("%d\n",s_len);
+    // for (int i = 0; rooms[i].name[0]; i++)
+    // {
+    //     node *r=rooms[i].timeline->prev;
+    //     while(r){
+    //         printf("%d,%d,%d\n",r->r->start/60,r->r->length,r->r->end/60);
+    //         r=r->prev;
+    //     }
+    // }
+
+    return;
 }

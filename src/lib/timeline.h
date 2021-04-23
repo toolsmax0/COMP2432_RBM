@@ -41,3 +41,10 @@ node *search_time(node *begin,time_t t, int direction);
 // search forwards if direction>=0, vice versa
 // return null if not found
 node *search_slot(node *begin, time_t start, time_t end, int direction);
+
+
+// search for a time gap between two nodes, returning the address of the node closer to begin.
+// min is the length of the gap in minutes
+// search forwards if direction>=0, vice versa
+// return null if not found
+node *search_gap(node *begin,int min,int direction);
