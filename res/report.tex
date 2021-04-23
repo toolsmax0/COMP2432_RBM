@@ -58,7 +58,7 @@
     \section{Scope}
         \subsection{Multi-Process Programming and Inter-process Communication}
             \paragraph{}
-            Scheduling module is implemented as a child process created via fork(). The communication between parent and scheduling module is based on pipe(), write(), and read(). In addition, in order to deliver complex information, we use pointers and pipes together.
+            Scheduling module is implemented as a child process created via fork(). The communication between parent and scheduling module is based on pipe(), write(), and read(). In addition, in order to deliver complex information, we use pointers and pipes together. To utilize CPU, child processes are created for different scheduling methods, so that they can run at same time. The parent process uses read() and write() to synchronize among childern and to control the order of output. Additionally, since opti works on the basis of prio scheduling, the result of prio scheduling is directly passed to opti via mother process in order to avoid redundant computations.
         \subsection{ CPU Scheduling}
             \paragraph{}
             In this project, we are required to implement FCFS and prio algorithm for component booking, which is similar to what we learned in lectures about CPU Scheduling. However, there are some difference between algorithms in CPU scheduling and booking scheduling. In booking scheduling, we only care about the order of coming request and don't mind exact arrival time. In CPU scheduling, processes can be finished while in booking scheduling, requests can't be finished during the scheduling. Thus, the method to implement booking scheduling algorithms is similar to but still differs from CPU scheduling.
@@ -67,7 +67,7 @@
             Thinking of rooms as fixed partitions and requests as jobs, the process of allocating rooms for requests has the same logic as Multi-programming with a Fixed number of Tasks, where we have fixed amount of resources which is divided into certain numbers of partitions, and our task is to allocate different amounts of resources for objects in need of resources.
         \subsection{Synchronization}
             \paragraph{}
-            Program-Monitored Synchronization is used for development.
+            Program-Monitored Synchronization is used for development. Since three children are running scheduling algorithms independently, some measure must be taken to synchronize and control the output. The parent process uses pipes to send signals to childs to control their behaviors, so that they can perform the scheduling algorithms simultaneously and be able to print results in order.
     \cleardoublepage
     \section{Concept}
         \subsection{FCFS Scheduling}
@@ -96,6 +96,9 @@
                 \includegraphics[scale=0.7]{../res/eps/prio_scheduling.eps}
                 \caption{Gantt Diagram for PRIO algorithm Sample output for one single Room}
             \end{figure}
+        \subsection{OPTI Scheduling}
+            \paragraph{}
+                Optimized Scheduling bases on the result of PRIO or FCFS scheduling and it rescheduled the valid failed requests. The process first finds a desired time slot  of a rejected request, and try to "push" this time slot to both sides until it finds a suitable time slot for this request. Then it selects one that is closer to the original desired time slot and update the request. The process repeats this procedure untill all requests that can be rescheduled is rearranged.
     \cleardoublepage
     \section{Algorithm}
     \subsection{Design of own algorithm}
