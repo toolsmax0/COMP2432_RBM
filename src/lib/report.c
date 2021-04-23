@@ -191,7 +191,7 @@ void print_perform(request *success[], request *fail[], char *algo)
             e = (e == -1 || e < cur->end) ? cur->end : e;           \
             book_len += cur->length;                                \
         } printf("\t      %-20s - %3.1f%%\n",                       \
-            res[di].name, book_len / ((float)(e - s)) * 60 * 100);  \
+            res[di].name, book_len *6000/difftime(e,s) );  \
     }
 
     PRINT_UTILIZATION(queue_r, counter_r, N_ROOMS, rooms)

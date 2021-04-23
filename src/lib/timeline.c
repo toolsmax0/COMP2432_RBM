@@ -6,8 +6,8 @@
 // initiates a timeline by setting the first & last value
 node *init_timeline()
 {
-    request tmp1 = {0, 0, start:genesis, end:genesis};
-    request tmp2 = {0, 0, start:eternity, end:eternity};
+    request tmp1 = {0, 0, start : genesis, end : genesis};
+    request tmp2 = {0, 0, start : eternity, end : eternity};
     request *r1 = malloc(sizeof(request));
     request *r2 = malloc(sizeof(request));
     *r1 = tmp1;
@@ -37,6 +37,9 @@ void insert_node(node *newnode, node *target)
     newnode->prev = target;
     newnode->next = next;
     next->prev = newnode;
+    if(newnode->r->end>next->r->start){
+        puts("111");
+    }
 }
 
 void remove_node(node *t)
@@ -73,8 +76,12 @@ node *search_time(node *begin, time_t t, int direction)
     node *next = begin->next;
     while (begin != NULL && next != NULL)
     {
-        if (cmp_time(begin->r->end, t) < 0 && cmp_time(next->r->start, t) > 0)
+        if (cmp_time(begin->r->start, t) < 0 && cmp_time(next->r->start, t) >= 0)
+        {
+            if (begin->prev == NULL)
+                return next;
             return begin;
+        }
         if (direction >= 0)
             begin = begin->next, next = next->next;
         else
@@ -91,4 +98,34 @@ node *search_slot(node *begin, time_t start, time_t end, int direction)
     if (begin == next)
         return begin;
     return NULL;
+}
+
+node *search_gap(node *begin, int min, int direction)
+{
+    if (direction < 0)
+        begin = begin->prev;
+    node *next = begin->next;
+    if (direction >= 0)
+    {
+        while (begin && next && cmp_time(next->r->start, time_after(begin->r->end, 0, min)) < 0)
+        {
+            begin = begin->next;
+            next = next->next;
+        }
+        return begin;
+    }
+    else
+    {
+        while (begin->r->end > time_after(next->r->start, 0, -min))
+        {
+            begin = begin->prev;
+            next = next->prev;
+        }
+        return next;
+    }
+    if (begin == NULL || next == NULL)
+        return NULL;
+    if (direction >= 0)
+        return begin;
+    return next;
 }
