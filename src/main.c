@@ -253,6 +253,7 @@ int main()
     char cmd[MAX_CMD_LENGTH], param[MAX_PARAM_LENGTH];
     do
     {
+        printf("RBM# ");
         char st[1000] = {};
         char check[100] = {};
         fgets(st, 200, stdin);
