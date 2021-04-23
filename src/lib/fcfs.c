@@ -14,7 +14,7 @@ int countOccupiedDevice(request *success[],int n_success, char devicename[], tim
     for (int i = 0; i < n_success; i++)
     {
         if((strcmp(success[i]->device[0],devicename)==0||strcmp(success[i]->device[1],devicename)==0)&&
-        ((start>=success[i]->start && start<=success[i]->end)||(end>=success[i]->start && end<=success[i]->end))) count++;
+        !(start>=success[i]->end||end<=success[i]->start)) count++;
     }
     return count;
 }

@@ -52,14 +52,14 @@ int check_newtime(node **dst, int len, int minutes, int direction, time_t *resul
     {
         if (direction >= 0)
         {
-            if (dst[i]->r->end < dst[tgt]->r->end)
+            if (dst[i]->next->next&&(dst[i]->r->end < dst[tgt]->r->end))
                 tgt = i;
             start = start > dst[i]->r->end ? start : dst[i]->r->end;
             end = end < dst[i]->next->r->start ? end : dst[i]->next->r->start;
         }
         else
         {
-            if (dst[i]->r->start > dst[tgt]->r->start)
+            if (dst[i]->prev->prev&&(dst[i]->r->start > dst[tgt]->r->start))
                 tgt = i;
             start = start > dst[i]->prev->r->end ? start : dst[i]->prev->r->end;
             end = end < dst[i]->r->start ? end : dst[i]->r->start;

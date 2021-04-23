@@ -374,7 +374,7 @@ void schedule(int algo)
         }
         else if (cid)
         {
-            // printf("Child %d, PID %d.\n", i, cid);
+            printf("Child %d, PID %d.\n", i, cid);
             close(pipes[i][0][0]);
             writec[i] = pipes[i][0][1];
             readc[i] = pipes[i][1][0];
