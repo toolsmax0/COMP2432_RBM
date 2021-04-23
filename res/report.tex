@@ -118,12 +118,6 @@
                 \includegraphics[scale=0.4]{eps/class_diagram.eps}
                 \caption{Overall class design diagram of Room Booking Manager}
             \end{figure}
-        \subsection{Sequence Design}
-            \begin{figure}[!htbp]
-                \centering
-                \includegraphics[scale=0.5]{eps/sequence_diagram.eps}
-                \caption{Overall sequence design diagram of Room Booking Manager}
-            \end{figure}
         \subsection{Activity Design}
             \begin{figure}[!htbp]
                 \centering
@@ -149,9 +143,9 @@
             \paragraph{}
             Below are some samples which conforms the above syntax:
             \begin{Verbatim}[gobble=8]
-                addMeeting -tenant_A 2021-05-10 21:50 1.50 5 projector_2K screen_100;
-                addMeeting -tenant_A 2021-05-11 18:20 0.30 5;
-                addMeeting -tenant_A 2021-05-11 4:10 0.0 5;
+                addMeeting -tenant_A 2021-05-10 21:50 1.5 5 projector_2K screen_100;
+                addMeeting -tenant_A 2021-05-11 18:20 0.3 5;
+                addMeeting -tenant_A 2021-05-11 4:1 0.0 5;
             \end{Verbatim}
         
         
@@ -166,19 +160,19 @@
             
             \begin{Verbatim}[gobble=8]
                 command_invalid and parameters does not matter;
-                addMeeting -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_100;
-                addMeeting -tenant_A date-in-valid 1:30 0.50 5 projector_2K screen_100;
-                addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
+                addMeeting -tenant_invalid 2021-05-10 1:30 0.5 5 projector_2K screen_100;
+                addMeeting -tenant_A date-in-valid 1:30 0.5 5 projector_2K screen_100;
+                addMeeting -tenant_B 2021-05-10 hhmm:invalid 1.5 5 webcam_FHD monitor_75;
                 addMeeting -tenant_C 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
-                addMeeting -tenant_D 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
-                addMeeting -tenant_D 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
+                addMeeting -tenant_D 2021-05-10 10:40 0.1 peopleinvalid projector_2K screen_150;
+                addMeeting -tenant_D 2021-05-16 3:10 1.1 5 device_invalid monitor_50;
             \end{Verbatim}
             \begin{itemize}
             \item Device pairing error (devices must be in pairs).
             \end{itemize}
             \begin{Verbatim}[gobble=8]
-                addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K monitor_50; 
-                addMeeting -tenant_E 2021-05-10 22:20 0.50 5 projector_4K; 
+                addMeeting -tenant_E 2021-05-10 22:20 0.5 5 projector_4K monitor_50; 
+                addMeeting -tenant_E 2021-05-10 22:20 0.5 5 projector_4K; 
             \end{Verbatim}
         
 

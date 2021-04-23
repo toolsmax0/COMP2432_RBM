@@ -60,6 +60,10 @@ The activity diagram of the program is demonstrated by the following picture.
 └── LICENSE
 ```
 
+## Demonstration
+
+[Demonstration Video](https://connectpolyu-my.sharepoint.com/:v:/g/personal/19079008d_connect_polyu_hk/EUIm-AwA4DpPkhBA0gznYqMBB1aJiehCfrILkvmW98QEbQ?e=5xdXCC)
+
 ## License
 
 This project is under [GPL-3.0 License](./LICENSE).
