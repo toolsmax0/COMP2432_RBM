@@ -1,9 +1,9 @@
-addConference -tenant_invalid 2021-05-10 1:30 0.50 5 webcam_FHD monitor_50;
-addConference -tenant_test date-in-valid 1:30 0.50 5 webcam_FHD monitor_50;
-addConference -tenant_test 2021-05-10 hhmm:invalid 1.50 5 webcam_FHD monitor_75;
+addConference -tenant_invalid 2021-05-10 1:30 0.5 5 webcam_FHD monitor_50;
+addConference -tenant_test date-in-valid 1:30 0.5 5 webcam_FHD monitor_50;
+addConference -tenant_test 2021-05-10 hhmm:invalid 1.5 5 webcam_FHD monitor_75;
 addConference -tenant_test 2021-05-10 18:30 duration.invalid 5 webcam_FHD monitor_50;
-addConference -tenant_test 2021-05-10 10:40 0.0 peopleinvalid webcam_FHD monitor_50;
-addConference -tenant_test 2021-05-16 3:10 1.10 5 device_invalid monitor_50;
-addConference -tenant_test 2021-05-10 22:20 0.50 5 projector_4K monitor_50;
-addConference -tenant_test 2021-05-10 22:20 0.50 5 webcam_FHD;
-addConference -tenant_test 2021-05-10 22:20 0.50 5;
+addConference -tenant_test 2021-05-10 10:40 0.1 peopleinvalid webcam_FHD monitor_50;
+addConference -tenant_test 2021-05-16 3:10 1.1 5 device_invalid monitor_50;
+addConference -tenant_test 2021-05-10 22:20 0.5 5 projector_4K monitor_50;
+addConference -tenant_test 2021-05-10 22:20 0.5 5 webcam_FHD;
+addConference -tenant_test 2021-05-10 22:20 0.5 5;
