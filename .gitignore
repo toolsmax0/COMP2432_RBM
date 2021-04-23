@@ -55,7 +55,10 @@ dkms.conf
 out/*
 
 # report build files
-/report/*
-!report/img/*.eps
-!report/report.pdf
-!report/report.tex
+/res/*
+!res/eps/
+!res/img/
+!res/svg/
+!res/uml/
+!res/report.pdf
+!res/report.tex
