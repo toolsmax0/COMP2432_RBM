@@ -73,8 +73,12 @@ node *search_time(node *begin, time_t t, int direction)
     node *next = begin->next;
     while (begin != NULL && next != NULL)
     {
-        if (cmp_time(begin->r->end, t) < 0 && cmp_time(next->r->start, t) > 0)
+        if (cmp_time(begin->r->start, t) < 0 && cmp_time(next->r->start, t) >= 0)
+        {
+            if (begin->prev == NULL)
+                return next;
             return begin;
+        }
         if (direction >= 0)
             begin = begin->next, next = next->next;
         else
@@ -93,17 +97,20 @@ node *search_slot(node *begin, time_t start, time_t end, int direction)
     return NULL;
 }
 
-node *search_gap(node *begin,int min, int direction)
+node *search_gap(node *begin, int min, int direction)
 {
-    if(direction < 0)
-    begin=begin->prev;
-    node *next=begin->next;
-    while(begin&&next&&cmp_time(next->r->start,time_after(begin->r->end,0,min))<0){
-        if(direction >= 0)begin = begin->next;
-        else begin=begin->prev;
-        next=begin->next;
+    if (direction < 0)
+        begin = begin->prev;
+    node *next = begin->next;
+    while (begin && next && cmp_time(next->r->start, time_after(begin->r->end, 0, min)) < 0)
+    {
+        if (direction >= 0)
+            begin = begin->next;
+        else
+            begin = begin->prev;
+        next = begin->next;
     }
-    if(begin == NULL||next==NULL)return NULL;
+    if (begin == NULL || next == NULL)
+        return NULL;
     return begin;
-
 }
