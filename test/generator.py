@@ -23,7 +23,8 @@ def gen_addMeeting():
     rand_d = random.randint(0,6)            # within one week
     rand_h = random.randint(0,23)           # within 24 hours
     rand_m = random.randrange(0,59,10)      # within 60 mins
-    rand_n = random.randrange(0,119,10)     # within 2 hours
+    rand_n1 = random.randrange(0,3,1)       # within 2 hours
+    rand_n2 = random.randrange(0,10,1)      # within 1.0 hour
     rand_p = random.randrange(5,10,5)       # 5,10 people
     rand_ifd = random.randint(0,2)          # 0 gowith 1st pair
                                             # 1 gowith 2nd pair
@@ -37,7 +38,7 @@ def gen_addMeeting():
                 "-" + str(tenantpool[rand_t]),
                 "2021-05-" + str(dayoffset + rand_d),
                 str(rand_h) + ":" + str(rand_m),
-                str(int(rand_n/60)) + "." + str(rand_n%60),
+                str(rand_n1) + "." + str(rand_n2),
                 str(rand_p),
                 devicepool1[rand_ifd][rand_d1],
                 devicepool2[rand_ifd][rand_d2]
@@ -50,7 +51,7 @@ def gen_addMeeting():
                 "-" + str(tenantpool[rand_t]),
                 "2021-05-" + str(dayoffset + rand_d),
                 str(rand_h) + ":" + str(rand_m),
-                str(int(rand_n/60)) + "." + str(rand_n%60),
+                str(rand_n1) + "." + str(rand_n2),
                 str(rand_p)
             ]
         )
@@ -67,7 +68,8 @@ def gen_addPresentation():
     rand_d = random.randint(0,6)            # within one week
     rand_h = random.randint(0,23)           # within 24 hours
     rand_m = random.randrange(0,59,10)      # within 60 mins
-    rand_n = random.randrange(0,179,10)     # within 3 hours
+    rand_n1 = random.randrange(0,4,1)       # within 3 hours
+    rand_n2 = random.randrange(0,10,1)      # within 1.0 hour
     rand_p = random.randrange(10,15,5)      # 10,15 people
     rand_ifd = 1                            # must have projector&screen
     rand_d1 = random.randint(0,1)
@@ -78,7 +80,7 @@ def gen_addPresentation():
             "-" + str(tenantpool[rand_t]),
             "2021-05-" + str(dayoffset + rand_d),
             str(rand_h) + ":" + str(rand_m),
-            str(int(rand_n/60)) + "." + str(rand_n%60),
+            str(rand_n1) + "." + str(rand_n2),
             str(rand_p),
             devicepool1[rand_ifd][rand_d1],
             devicepool2[rand_ifd][rand_d2]
@@ -97,7 +99,8 @@ def gen_addConference():
     rand_d = random.randint(0,6)            # within one week
     rand_h = random.randint(0,23)           # within 24 hours
     rand_m = random.randrange(0,59,10)      # within 60 mins
-    rand_n = random.randrange(0,299,10)     # within 5 hours
+    rand_n1 = random.randrange(0,6,1)       # within 5 hours
+    rand_n2 = random.randrange(0,10,1)      # within 1.0 hour
     rand_p = random.randrange(10,20,5)      # 10,15,20 people
     rand_ifd = 0
     rand_d1 = random.randint(0,1)
@@ -108,7 +111,7 @@ def gen_addConference():
             "-" + str(tenantpool[rand_t]),
             "2021-05-" + str(dayoffset + rand_d),
             str(rand_h) + ":" + str(rand_m),
-            str(int(rand_n/60)) + "." + str(rand_n%60),
+            str(rand_n1) + "." + str(rand_n2),
             str(rand_p),
             devicepool1[rand_ifd][rand_d1],
             devicepool2[rand_ifd][rand_d2]
@@ -127,7 +130,8 @@ def gen_bookDevice():
     rand_d = random.randint(0,6)            # within one week
     rand_h = random.randint(0,23)           # within 24 hours
     rand_m = random.randrange(0,59,10)      # within 60 mins
-    rand_n = random.randrange(0,299,10)     # within 5 hours
+    rand_n1 = random.randrange(0,3,1)       # within 2 hours
+    rand_n2 = random.randrange(0,10,1)      # within 1.0 hour
     rand_ifd = random.randint(0,1)          # 0 gowith pool1
                                             # 1 gowith pool2
     rand_d1 = random.randint(0,1)
@@ -139,7 +143,7 @@ def gen_bookDevice():
                 "-" + str(tenantpool[rand_t]),
                 "2021-05-" + str(dayoffset + rand_d),
                 str(rand_h) + ":" + str(rand_m),
-                str(int(rand_n/60)) + "." + str(rand_n%60),
+                str(rand_n1) + "." + str(rand_n2),
                 devicepool1[rand_d1][rand_d2],
             ]
         )
@@ -150,11 +154,17 @@ def gen_bookDevice():
                 "-" + str(tenantpool[rand_t]),
                 "2021-05-" + str(dayoffset + rand_d),
                 str(rand_h) + ":" + str(rand_m),
-                str(int(rand_n/60)) + "." + str(rand_n%60),
+                str(rand_n1) + "." + str(rand_n2),
                 devicepool2[rand_d1][rand_d2],
             ]
         )
     return(string + ";")
 
 for i in range(100):
+    print(gen_addMeeting())
+for i in range(100):
+    print(gen_addConference())
+for i in range(100):
     print(gen_addPresentation())
+for i in range(100):
+    print(gen_bookDevice())
