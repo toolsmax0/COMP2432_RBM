@@ -25,7 +25,7 @@ def gen_addMeeting():
     rand_m = random.randrange(0,59,10)      # within 60 mins
     rand_n1 = random.randrange(0,3,1)       # within 2 hours
     rand_n2 = random.randrange(0,10,1)      # within 1.0 hour
-    rand_p = random.randrange(5,10,5)       # 5,10 people
+    rand_p = random.randrange(5,10,2)       # 5,7,9 people
     rand_ifd = random.randint(0,2)          # 0 gowith 1st pair
                                             # 1 gowith 2nd pair
                                             # 2 no device
@@ -162,9 +162,9 @@ def gen_bookDevice():
 
 for i in range(100):
     print(gen_addMeeting())
-for i in range(100):
-    print(gen_addConference())
-for i in range(100):
-    print(gen_addPresentation())
-for i in range(100):
-    print(gen_bookDevice())
+# for i in range(100):
+#     print(gen_addConference())
+# for i in range(100):
+#     print(gen_addPresentation())
+# for i in range(100):
+#     print(gen_bookDevice())

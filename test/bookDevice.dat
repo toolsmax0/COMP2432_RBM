@@ -2,7 +2,7 @@ bookDevice -tenant_B 2021-05-13 21:40 2.9 webcam_UHD;
 bookDevice -tenant_D 2021-05-13 5:30 1.6 webcam_UHD;
 bookDevice -tenant_B 2021-05-10 22:40 1.8 webcam_FHD;
 bookDevice -tenant_C 2021-05-15 19:30 1.7 monitor_50;
-bookDevice -tenant_A 2021-05-11 7:0 0.0 monitor_50;
+bookDevice -tenant_A 2021-05-11 7:0 0.1 monitor_50;
 bookDevice -tenant_E 2021-05-11 8:10 0.3 monitor_50;
 bookDevice -tenant_D 2021-05-10 19:50 2.0 screen_150;
 bookDevice -tenant_D 2021-05-10 6:40 0.6 monitor_75;
