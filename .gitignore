@@ -53,3 +53,9 @@ dkms.conf
 
 .vscode/
 out/*
+
+# report build files
+/report/*
+!report/img/*.eps
+!report/report.pdf
+!report/report.tex

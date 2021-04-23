@@ -1,0 +1,15 @@
+@startgantt
+
+title __PRIO Scheduling Sample__\n
+
+
+[tenant_A's meeting] as [T1] lasts 7 days
+[tenant_C's presentation] as [T2] lasts 8 days and starts 2 days after [T1]'s end
+[tenant_B's conference] as [T3] lasts 10 days and starts 6 days before [T2]'s end
+[tenant_E's meeting] as [T4] lasts 8 days and starts 1 days before [T3]'s end
+[T1] is colored in technology
+[T2] is colored in salmon
+[T3] is colored in technology
+[T4] is colored in salmon
+
+@endgatt

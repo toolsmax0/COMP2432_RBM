@@ -28,7 +28,7 @@ repeat :read command;
 			split again
 				->endProgram;
 				:exit program;
-				stop;
+				stop
 			endsplit
 			else 
 				->no-match;
