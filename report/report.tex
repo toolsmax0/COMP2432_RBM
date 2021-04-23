@@ -55,14 +55,18 @@
         communication. 
     \cleardoublepage
     \section{Scope}
-        \paragraph{}
-        Multi-Process Programming and Inter-process Communication: pipe() and fork(); 
-        \paragraph{}
-        CPU Scheduling: FCFS and PR 
-        \paragraph{}
-        Memory Allocation: MFT
-        \paragraph{}
-        Synchronization: Program-Monitored Synchronization 
+        \subsection{Multi-Process Programming and Inter-process Communication}
+            \paragraph{}
+            Scheduling module is implemented as a child process created via fork(). The communication between parent and scheduling module is based on pipe(), write(), and read(). In addition, in order to deliver complex information, we use pointers and pipes together.
+        \subsection{ CPU Scheduling}
+            \paragraph{}
+            In this project, we are required to implement FCFS and prio algorithm for component booking, which is similar to what we learned in lectures about CPU Scheduling. However, there are some difference between algorithms in CPU scheduling and booking scheduling. In booking scheduling, we only care about the order of coming request and don't mind exact arrival time. In CPU scheduling, processes can be finished while in booking scheduling, requests can't be finished during the scheduling. Thus, the method to implement booking scheduling algorithms is similar to but still differs from CPU scheduling.
+        \subsection{Memory Allocation}
+            \paragraph{}
+            Thinking of rooms as fixed partitions and requests as jobs, the process of allocating rooms for requests has the same logic as Multi-programming with a Fixed number of Tasks, where we have fixed amount of resources which is divided into certain numbers of partitions, and our task is to allocate different amounts of resources for objects in need of resources.
+        \subsection{Synchronization}
+            \paragraph{}
+            Program-Monitored Synchronization is used for development.
     \cleardoublepage
     \section{Concept}
         \subsection{FCFS Scheduling}
