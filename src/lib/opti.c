@@ -48,6 +48,10 @@ int check_newtime(node **dst, int len, int minutes, int direction, time_t *resul
         end = dst[0]->r->start;
     }
     int tgt = 0;
+    if(len>1){
+        if(direction>=0&&dst[tgt]->next->next==NULL)tgt++;
+        if(direction<=0&&dst[tgt]->prev->prev==NULL)tgt++;
+    }
     for (int i = 1; i < len; i++)
     {
         if (direction >= 0)
