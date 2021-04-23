@@ -52,7 +52,7 @@ int allocateRoom(request *rqs, request *success[]){
         for (int j = 0; success[j]!=0; j++)
         {
             if (success[j]->roomno==roomno
-                &&((rqs->start>=success[j]->start && rqs->start<=success[j]->end)||(rqs->end>=success[j]->start && rqs->end<=success[j]->end))){
+                &&(!(rqs->end<=success[j]->start||rqs->start>=success[j]->end))){
                     flag=1;
                     break;
             } 
