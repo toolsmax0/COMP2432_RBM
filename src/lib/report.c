@@ -132,7 +132,8 @@ void print_booking(request *success[], request *fail[], char *algo)
 
     PRINT_INVALID_RQ(success)
     PRINT_INVALID_RQ(fail)
-    #endif
+    printf(ANSI_DEFAULT);
+#endif
 }
 
 void print_perform(request *success[], request *fail[], char *algo)
