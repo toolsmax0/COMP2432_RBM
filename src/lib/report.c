@@ -127,7 +127,7 @@ void print_booking(request *success[], request *fail[], char *algo)
     {                                                                                                                                           \
         if (RQ_ISVALID(arr, i))                                                                                                                 \
             continue;                                                                                                                           \
-        printf("INVALID in" #arr ": %s %d %d %s %s\n", arr[i]->tenant, arr[i]->priority, arr[i]->people, arr[i]->device[0], arr[i]->device[1]); \
+        printf("INVALID in " #arr ": %s %d %d %s %s\n", arr[i]->tenant, arr[i]->priority, arr[i]->people, arr[i]->device[0], arr[i]->device[1]); \
     }
 
     PRINT_INVALID_RQ(success)
@@ -209,9 +209,6 @@ void print_perform(request *success[], request *fail[], char *algo)
         d_s[i]=eternity;
         d_e[i]=genesis;
     }
-    int count=0;
-    for (; success[count]; count++);
-    printf("%d\n",count);
     for (int i = 0; success[i]; i++)
     {
         request *r = success[i];
@@ -247,7 +244,6 @@ void print_perform(request *success[], request *fail[], char *algo)
             t2 = t1 > r->end ? t2 : r->end;
         }
     }
-    printf("%.5f\n", length * 60 / difftime(t2, t1));
     for (int i = 0; rooms[i].name[0]; i++)
     {
         printf("\t      %-20s - %3.1f%%\n", rooms[i].name, r_len[i] * 6000 / difftime(r_e[i], r_s[i]));

@@ -268,14 +268,14 @@ void opti_schedule(request *rqs[], request *success[], request *fail[])
     // }
     // printf("%.5f\n", length * 60 / difftime(t2, t1));
     // printf("%d\n",s_len);
-    for (int i = 0; rooms[i].name[0]; i++)
-    {
-        node *r=rooms[i].timeline->prev;
-        while(r){
-            printf("%d,%d,%d\n",r->r->start/60,r->r->length,r->r->end/60);
-            r=r->prev;
-        }
-    }
+    // for (int i = 0; rooms[i].name[0]; i++)
+    // {
+    //     node *r=rooms[i].timeline->prev;
+    //     while(r){
+    //         printf("%d,%d,%d\n",r->r->start/60,r->r->length,r->r->end/60);
+    //         r=r->prev;
+    //     }
+    // }
 
     return;
 }
