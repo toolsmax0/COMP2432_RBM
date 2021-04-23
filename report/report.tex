@@ -181,7 +181,12 @@
 
     \cleardoublepage
     \section{Performance analysis}
-
+        \paragraph{}
+            The utilization of FCFS and prio are similar to each other and whose utilization is higher depends on the data given since the we can get the output of prio by giving FCFS the reordered input data of prio. However, in most cases, the performance of prio is better than FCFS. Because prio guarantee that more important bookings are severed while the utilization is not lowwer in general.  
+        \paragraph{}
+            Based on the result of FCFS and prio, opti improves the utilization while guaranteeing more important bookings are served. If we don't take into account that sometimes it is very unfair to users who come first (now their bookings may be canceled only because some later bookings with the same priority takes longer time), the performance of opti is the best.
+        \paragraph{}
+            In conclusion, opti has the best performance in our opinion, because it maintains a relatively good balance between efficiency and fairness.
     \cleardoublepage
     \section{Program Setup \& Analysis}
         \subsection{Program Setup}
