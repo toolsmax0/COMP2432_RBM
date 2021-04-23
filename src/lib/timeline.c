@@ -6,8 +6,8 @@
 // initiates a timeline by setting the first & last value
 node *init_timeline()
 {
-    request tmp1 = {0, 0, genesis, genesis};
-    request tmp2 = {0, 0, eternity, eternity};
+    request tmp1 = {0, 0, start:genesis, end:genesis};
+    request tmp2 = {0, 0, start:eternity, end:eternity};
     request *r1 = malloc(sizeof(request));
     request *r2 = malloc(sizeof(request));
     *r1 = tmp1;

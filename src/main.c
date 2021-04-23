@@ -209,12 +209,16 @@ EXE run_cmd(int cmd, char *param, request *rq, int *newreq)
 void init()
 {
     init_from_ini();
+    struct tm genesis_s = {0, 0, 0, 1, 0, 0};
+    struct tm eternity_s = {0, 0, 0, 1, 0, 130};
+    genesis = mktime(&genesis_s);
+    eternity = mktime(&eternity_s);
     IStreams[0] = stdin;
     memset(devices_t, -1, sizeof(devices_t));
     for (int i = 0; devices[i].name[0] != 0; i++)
     {
         insert(i);
-        node *timelines[devices[i].quantity];
+        node **timelines=calloc(devices[i].quantity,sizeof(node*));
         for (int j = 0; j < devices[i].quantity; j++)
             timelines[j] = init_timeline();
         devices[i].timelines = timelines;
@@ -223,10 +227,6 @@ void init()
     {
         rooms[i].timeline = init_timeline();
     }
-    struct tm genesis_s = {0, 0, 0, 1, 0, 0};
-    struct tm eternity_s = {0, 0, 0, 1, 0, 130};
-    genesis = mktime(&genesis_s);
-    eternity = mktime(&eternity_s);
 }
 
 int main()
