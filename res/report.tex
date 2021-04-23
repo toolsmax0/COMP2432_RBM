@@ -79,7 +79,7 @@
                 Below is a illustration of FCFS algorithm. Green-colored requests are accepted, whereas red-colored requests are rejected, and the requests arrive in sequence indicated by arrows between. 
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.7]{../res/eps/fcfs_scheduling.eps}
+                \includegraphics[scale=0.7]{eps/fcfs_scheduling.eps}
                 \caption{Gantt Diagram for FCFS algorithm Sample output for one single Room}
             \end{figure}
         \subsection{PRIO Scheduling}
@@ -93,7 +93,7 @@
             Below is the visualization of PRIO scheduling, with the same annotation rules as used in FCFS.
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.7]{../res/eps/prio_scheduling.eps}
+                \includegraphics[scale=0.7]{eps/prio_scheduling.eps}
                 \caption{Gantt Diagram for PRIO algorithm Sample output for one single Room}
             \end{figure}
         \subsection{OPTI Scheduling}
@@ -115,19 +115,19 @@
         \subsection{Class Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.4]{../res/eps/class_diagram.eps}
+                \includegraphics[scale=0.4]{eps/class_diagram.eps}
                 \caption{Overall class design diagram of Room Booking Manager}
             \end{figure}
         \subsection{Sequence Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.5]{../res/eps/sequence_diagram.eps}
+                \includegraphics[scale=0.5]{eps/sequence_diagram.eps}
                 \caption{Overall sequence design diagram of Room Booking Manager}
             \end{figure}
         \subsection{Activity Design}
             \begin{figure}[!htbp]
                 \centering
-                \includegraphics[scale=0.45]{../res/eps/activity_diagram.eps}
+                \includegraphics[scale=0.45]{eps/activity_diagram.eps}
                 \caption{Overall activity design diagram of Room Booking Manager}
             \end{figure}
     \cleardoublepage
@@ -184,7 +184,12 @@
 
     \cleardoublepage
     \section{Performance analysis}
-
+    \paragraph{}
+        The utilization of FCFS and prio are similar to each other and whose utilization is higher depends on the data given since the we can get the output of prio by giving FCFS the reordered input data of prio. However, in most cases, the performance of prio is better than FCFS. Because prio guarantee that more important bookings are severed while the utilization is not lowwer in general.  
+    \paragraph{}
+        Based on the result of FCFS and prio, opti improves the utilization while guaranteeing more important bookings are served. If we don't take into account that sometimes it is very unfair to users who come first (now their bookings may be canceled only because some later bookings with the same priority takes longer time), the performance of opti is the best.
+    \paragraph{}
+        In conclusion, opti has the best performance in our opinion, because it maintains a relatively good balance between efficiency and fairness.
     \cleardoublepage
     \section{Program Setup \& Analysis}
         \subsection{Program Setup}

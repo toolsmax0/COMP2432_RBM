@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define _REPORT_DEBUG
+// #define _REPORT_DEBUG
 
 extern int n_components[];
 extern room rooms[];
