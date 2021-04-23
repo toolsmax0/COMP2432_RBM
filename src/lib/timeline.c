@@ -37,6 +37,9 @@ void insert_node(node *newnode, node *target)
     newnode->prev = target;
     newnode->next = next;
     next->prev = newnode;
+    if(newnode->r->end>next->r->start){
+        puts("111");
+    }
 }
 
 void remove_node(node *t)

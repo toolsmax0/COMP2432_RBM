@@ -116,6 +116,8 @@ void opti_schedule(request *rqs[], request *success[], request *fail[])
         node *n = malloc(sizeof(node));
         n->r = r;
         insert_node(n, rooms[r->roomno].timeline->prev);
+        if (n->next->r->start < n->r->end)
+            printf("%d", n->r->length);
         if (r->device[0][0] == 0)
             continue;
         int index = search(r->device[0]);
@@ -209,6 +211,8 @@ void opti_schedule(request *rqs[], request *success[], request *fail[])
                 node *n = malloc(sizeof(node));
                 n->r = r;
                 insert_node(n, desn[i]->prev);
+                if (n->next->r->start < n->r->end)
+                    printf("%d", n->r->length);
             }
         }
         else
@@ -231,11 +235,38 @@ void opti_schedule(request *rqs[], request *success[], request *fail[])
                 node *n = malloc(sizeof(node));
                 n->r = r;
                 insert_node(n, desp[i]);
+                if (n->next->r->start < n->r->end)
+                    printf("%d", n->r->length);
             }
         }
         success[s_len++] = r;
         fail[f_len] = 0;
     }
     qsort(fail, f_len, sizeof(request *), cmp4);
+    node *a = rooms[0].timeline->prev;
+    time_t t1 = a->r->end;
+    int length = 0;
+    ;
+    while (a->prev)
+    {
+        length += a->r->length;
+        a = a->prev;
+    }
+    time_t t2 = a->next->r->start;
+    printf("%.5f ", length * 60 / difftime(t1, t2));
+    t1 = eternity;
+    t2 = genesis;
+    length = 0;
+    for (int i = 0; i < s_len; i++)
+    {
+        request *r = success[i];
+        if (r->roomno == 0)
+        {
+            length += r->length;
+            t1 = t1 < r->start ? t1 : r->start;
+            t2 = t1 > r->end ? t2 : r->end;
+        }
+    }
+    printf("%.5f\n", length * 60 / difftime(t2, t1));
     return;
 }
