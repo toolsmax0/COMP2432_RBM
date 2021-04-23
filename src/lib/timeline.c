@@ -102,15 +102,27 @@ node *search_gap(node *begin, int min, int direction)
     if (direction < 0)
         begin = begin->prev;
     node *next = begin->next;
-    while (begin && next && cmp_time(next->r->start, time_after(begin->r->end, 0, min)) < 0)
+    if (direction >= 0)
     {
-        if (direction >= 0)
+        while (begin && next && cmp_time(next->r->start, time_after(begin->r->end, 0, min)) < 0)
+        {
             begin = begin->next;
-        else
+            next = next->next;
+        }
+        return begin;
+    }
+    else
+    {
+        while (begin->r->end > time_after(next->r->start, 0, -min))
+        {
             begin = begin->prev;
-        next = begin->next;
+            next = next->prev;
+        }
+        return next;
     }
     if (begin == NULL || next == NULL)
         return NULL;
-    return begin;
+    if (direction >= 0)
+        return begin;
+    return next;
 }
