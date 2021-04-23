@@ -65,23 +65,27 @@
         Synchronization: Program-Monitored Synchronization 
     \cleardoublepage
     \section{Concept}
-        \subsection{FCFS Scheduling}
-            \paragraph{}
-                FCFS scheduling is indeed taking the arriving time of the request as the
-                priority. It is very easy to implement this algorithm, as long as the
-                order of the request array is the same order as input, which is very
-                natural. One thing to note that to keep the order of request array the
-                same as input order, Input Module must be single-threaded. 
         \subsection{PRIO Scheduling}
             \paragraph{}
-            It is already mentioned that FCFS is a special case of PRIO scheduling where
-            the priority is the arriving time. Now that a priority is appended with the
-            request, all it needs is to sort the request array by priority, then call
-            FCFS scheduling to implement PRIO scheduling. This reuses the code and
-            decrease the complexity of the program. 
+                Priority scheduling(aka, PRIO) is the scheduling algorithm based on the
+                priority of requests. The priorities are appended with the requests. 
+                Requests are stored in an array after sortion based on priority. 
+        \subsection{FCFS Scheduling}
+            \paragraph{}
+                First-Come-First-Serve(aka, FCFS) is a special case of PRIO where the
+                priority is given according to the arrival time. Requests added in 
+                advance obtain higher priorities and the priorities appended are ignored.
+                It is noticeable that the input of requests should be single-threaded to
+                preserve the time-based priority.
     \cleardoublepage
-    \section{Design of opti}
-
+    \section{Algorithm}
+        \subsection{Design of own algorithm }
+            \paragraph{Optimization Algorithm}
+            \paragraph{}
+                Optimization algorithm is based on processed result by FCFS algorithm or
+                PRIO algorithm. Failed requests from the two algorithm firstly undergo
+                verification. Valid requests are rescheduled based on bi-directional
+                search of linked lists of rooms and devices. 
     \cleardoublepage
     \section{Program Structure}
         \subsection{Class Design}
@@ -195,6 +199,9 @@
             \paragraph{}
                 All source files are located under \texttt{./src/} directory. Please \texttt{cd}
                 to corresponding directory for reference.
+            \begin{verbatim}
+                Insert source here
+            \end{verbatim}
         \subsection{Test Data}
             \paragraph{}
                 All test data are generated with \texttt{generator.py} under \texttt{./test/}
@@ -206,16 +213,24 @@
             \paragraph{}
                 Files marked with \texttt{*\_invalid.dat} are invalid tests for specific command
                 types. The rest of files are for valid tests.
+            \begin{verbatim}
+                Insert test data here
+            \end{verbatim}
         \subsection{Test Results}
             \paragraph{}
                 Warnings should be generated for each invalid case, while not for valid cases. 
             \paragraph{}
                 The descriptions of valid/invalid tests have been clearly stated under
                 \textbf{9.2 Test Data}.
+            \begin{verbatim}
+                Insert warning here
+            \end{verbatim}
         \subsection{Sample Output}
             \paragraph{}
                 Output of test files are stored in \texttt{sample\_output\_*.txt} file under
                 \texttt{./test/} directory with algorithm applied. Please refer to the
                 corresponding file for reference.
-                
+            \begin{verbatim}
+                Insert Output file here
+            \end{verbatim}
 \end{document}
