@@ -1,0 +1,54 @@
+@startuml
+title __Room Booking Manager Activity Diagram__\n
+
+' skinparam ConditionEndStyle hline
+skinparam BackgroundColor transparent
+
+start
+repeat :read command;
+	:process command;
+
+	if (valid?) then
+		->yes;
+		partition Execution #application {
+			if (switch)
+				->match;
+			split
+				->addMeeting;
+				:add a meeting to timeline;
+			split again
+				->otherBookings;
+				:...;
+			split again 
+				->addBatch;
+				:redirect file content to input;
+			split again 
+				->printBookings;
+				:print by algorithm;
+			split again
+				->endProgram;
+				:exit program;
+				stop;
+			endsplit
+			else 
+				->no-match;
+				:no-match;
+				:report internal error;
+			endif
+		}
+	else
+		->no;
+		partition Help #implementation {
+			:add request to timeline;
+			:prompt syntax warning;
+			:generate help message;
+		}
+	endif
+repeat while
+
+right footer
+RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
+COMP2432 Operating Systems, Year 2020-21 Spring, The Hong Kong Polytechnic University.
+endfooter
+
+@enduml

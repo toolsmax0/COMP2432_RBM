@@ -299,5 +299,15 @@ dictionary * iniparser_load(const char * ininame);
  */
 void iniparser_freedict(dictionary * d);
 
+/**
+  @brief    Convert a string to lowercase.
+  @param    in   String to convert.
+  @param    out Output buffer.
+  @param    len Size of the out buffer.
+  @return   ptr to the out buffer or NULL if an error occured.
+
+  This function convert a string into lowercase.
+  At most len - 1 elements of the input string will be converted.
+ */
 const char *strlwc(const char *in, char *out, unsigned len);
 #endif

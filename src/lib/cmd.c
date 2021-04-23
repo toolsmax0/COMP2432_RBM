@@ -39,7 +39,7 @@ static const char *SYNTAX[] =
     "  endProgram                                                      ;           \n", //7
     "Parameter Syntax        Information                                           \n", //8
     "  t                       A tenant for booking                                \n", //9
-    "                            = tanant_A|tanant_B|tanant_C|tanant_D|tanant_E    \n", //10
+    "                            = tenant_A|tenant_B|tenant_C|tenant_D|tenant_E    \n", //10
     "  YYYY-MM-DD hh:mm        Booking start time format in ISO 8601               \n", //11
     "  n.n                     Duration in format hours.minutes                    \n", //12
     "  p                       Number of people                                    \n", //13

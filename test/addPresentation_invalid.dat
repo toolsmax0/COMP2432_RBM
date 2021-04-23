@@ -1,0 +1,9 @@
+addPresentation -tenant_invalid 2021-05-10 1:30 0.50 5 projector_2K screen_150;
+addPresentation -tenant_test date-in-valid 1:30 0.50 5 projector_2K screen_150;
+addPresentation -tenant_test 2021-05-10 hhmm:invalid 1.50 5 projector_2K screen_150;
+addPresentation -tenant_test 2021-05-10 18:30 duration.invalid 5 projector_2K screen_150;
+addPresentation -tenant_test 2021-05-10 10:40 0.0 peopleinvalid projector_2K screen_150;
+addPresentation -tenant_test 2021-05-16 3:10 1.10 5 device_invalid screen_150;
+addPresentation -tenant_test 2021-05-10 22:20 0.50 5 projector_2K monitor_50;
+addPresentation -tenant_test 2021-05-10 22:20 0.50 5 projector_2K;
+addPresentation -tenant_test 2021-05-10 22:20 0.50 5;

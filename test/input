@@ -1,0 +1,3 @@
+addBatch -test/*.dat;
+printBookings -ALL;
+endProgram;

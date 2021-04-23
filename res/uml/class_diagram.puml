@@ -1,0 +1,157 @@
+@startuml
+title __Room Booking Manager Class Diagram__\n
+
+skinparam BackgroundColor transparent
+
+component report #bisque {
+    file reportfile as "report.c/.h" {
+        class report_generator <<(M, lightskyblue) module>> {
+            +void print_booking()
+            +void print_perform()
+        }
+    }
+}
+component scheduler #implementation {
+    file opti.c/.h {
+        class opti_scheduler <<(M, lightskyblue) module>> {
+            +void opti_schedule()
+        }
+    }
+    file prio.c/.h {
+        class prio_scheduler <<(M, lightskyblue) module>> {
+            +void prio_schedule()
+        }
+    }
+    file fcfs.c/.h {
+        class fcfs_scheduler <<(M, lightskyblue) module>> {
+            +void fcfs_schedule()
+        }
+    }
+    opti_scheduler -> prio_scheduler
+    prio_scheduler -> fcfs_scheduler
+}
+component utilities #lightgray {
+    file cmd as "cmd.c/.h" {
+        enum EXE {
+            RUN_ERROR_PARAM         
+            RUN_ERROR_RUNTIME       
+            RUN_ERROR_PARSING       
+            RUN_ERROR_INVALID_CMD   
+            RUN_EXIT                
+            RUN_SUCCESS
+        }
+        enum CMD {
+            addMeeting     
+            addPresentation
+            addConference  
+            bookDevice     
+            addBatch       
+            printBookings  
+            endProgram     
+        }
+        class commandparser <<(M, lightskyblue) module>> {
+            -char *SYNTAX[]
+            +CMD int_to_cmd()
+            +int cmd_to_int()
+            +void usage()
+        }
+        commandparser -down-> CMD :call
+    }
+    file componentc as "component.c/.h" {
+        class device <<(S, lightgray) struct>> {
+            +char name[]
+            +int quantity
+            +node **timelines
+        }
+        class tenant <<(S, lightgray) struct>> {
+            +char name[]
+            +int enabled
+        }
+        class room <<(S, lightgray) struct>> {
+            +char name[]
+            +int capacity
+            +node *timeline
+        }
+        class hashtable <<(M, lightskyblue) module>> {
+            +int hash_code()
+            +int insert()
+            +int search()
+        }
+    }
+    file requestc as "request.c/.h" {
+        class request <<(S, lightgray) struct>> {
+            +int priority
+            +char tenant[40]
+            +time_t start
+            +time_t end
+            +int length
+            +int people
+            +int roomno 
+            +char device[2][40]
+            +char isvalid 
+        }
+        class request_parser <<(M, lightskyblue) module>> {
+            +time_t time_after()
+            +double cmp_time()
+            +char check_valid()
+        }
+    }
+    file timelinec as "timeline.c/.h" {
+        class node <<(S, lightgray) struct>> {
+            +request *r
+            +node *prev
+            +node *next
+        }
+        class timeline_modifier <<(M, lightskyblue) module>> {
+            +node* init_timeline()
+            +void insert_node()
+            +void remove_node()
+            +node* search_request()
+            +node* search_time()
+            +node* search_slot()
+        }
+    }
+    
+    componentc --> timelinec
+    timelinec --> requestc
+}
+component iniparserlib #gray {
+    file iniparser as "iniparser.c/.h" {
+    }
+    file dictionary as "dictionary.c/.h" {
+    }
+    ' iniparser -down-> dictionary
+}
+component IO as "I/O" #application {
+    file mainc as "main.c" {
+        class main <<(M, lightskyblue) module>> {
+            -EXE run_cmd()
+            +int main()
+        }
+        class initiation <<(M, lightskyblue) module>> {
+            -void init_from_ini()
+            +void init()
+        }
+        entity database {
+            +int n_components[]
+            +tenant tenants[]
+            +room rooms[]
+            +device devices[]
+        }
+
+        initiation::init_from_ini -left-> database 
+    }
+}
+
+main::run_cmd -up-> scheduler :call
+IO -down-> utilities :utilize
+main::run_cmd -up-> report :call
+
+initiation::init_from_ini -> iniparserlib :call
+
+right footer
+RBM(Room Booking Manager) proposed by Group G06: MAN Furui, WANG Meng, WU Junyu, XING Shiji.
+COMP2432 Operating Systems, Year 2020-21 Spring, The Hong Kong Polytechnic University.
+endfooter
+
+@enduml
