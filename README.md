@@ -32,8 +32,6 @@ The activity diagram of the program is demonstrated by the following picture.
 
 ![Class Diagram](./res/svg/class_diagram.svg)
 
-![Sequence Diagram](./res/svg/sequence_diagram.svg)
-
 ### Directory Structure
 
 ```
