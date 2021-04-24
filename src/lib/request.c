@@ -68,10 +68,10 @@ char check_valid(request *r)
     {
     case 0:
         // conference need webcam & monitor
-        return DEVICE_PAIRING_1(r);
+        return DEVICE_PAIRING_1(r) || DEVICE_PAIRING_2(r);
     case 1:
         // presentation need projector & monitor
-        return DEVICE_PAIRING_2(r);
+        return DEVICE_PAIRING_1(r) || DEVICE_PAIRING_2(r);
     case 2:
         // meeting needs devices in pairs
         // but not necceesary
